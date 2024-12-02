@@ -63,8 +63,16 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
             const timestamp = new Date().toISOString();
             setAttendance((prevAttendance) => ({
               ...prevAttendance,
-              [name]: [...(prevAttendance[name] || []), { timestamp }],
+              [name]: [
+                ...(prevAttendance[name] || []),
+                {
+                  attender: name,
+                  timestamp,
+                  distance,
+                },
+              ],
             }));
+            
             if (bounding) drawDetections(detections);
           }
         }

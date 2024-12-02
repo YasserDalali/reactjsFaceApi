@@ -55,9 +55,7 @@ function FaceDetection() {
               message={attendance[name]
                 .map(
                   (entry) =>
-                    `Name: ${entry.attender}, Time: ${new Date(
-                      entry.timestamp
-                    ).toLocaleString()}, Distance: ${entry.distance.toFixed(2) < 0.48 ? "Accurate" : "Innacurate"}`
+                    `Checked ${entry.attender.replace("_", " ")}, at ${new Date(entry.timestamp).toLocaleTimeString()}, ${entry.distance.toFixed(2) < 0.48 ? "Accurate" : "Innacurate"}`
                 )
                 .join("\n")}
               type="success"

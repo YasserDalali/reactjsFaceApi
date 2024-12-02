@@ -50,41 +50,43 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
         .withFaceLandmarks()
         .withFaceDescriptors();
   
-      if (detections.length > 0) {
-        for (const name in referenceImages) {
-          const referenceImageDescriptor = await loadReferenceImage(referenceImages[name]);
-          const detectionsDescriptors = detections.map((d) => d.descriptor);
-          const distance = faceapi.euclideanDistance(
-            referenceImageDescriptor,
-            detectionsDescriptors[0]
-          );
+      const labeledDetections = await Promise.all(
+        detections.map(async (detection) => {
+          let label = "Unknown";
   
-          if (distance < accuracy) {
-            const timestamp = new Date().toISOString();
+          for (const name in referenceImages) {
+            const referenceImageDescriptor = await loadReferenceImage(referenceImages[name]);
+            const distance = faceapi.euclideanDistance(referenceImageDescriptor, detection.descriptor);
   
-            setAttendance((prevAttendance) => {
-              // Check if the person is already registered
-              if (!prevAttendance[name]) {
-                return {
-                  ...prevAttendance,
-                  [name]: [
-                    {
-                      attender: name,
-                      timestamp,
-                      distance,
-                    },
-                  ],
-                };
-              }
-              return prevAttendance;
-            });
+            if (distance < accuracy) {
+              label = name;
+              const timestamp = new Date().toISOString();
   
-            if (bounding) drawDetections(detections);
+              setAttendance((prevAttendance) => {
+                // Only log if not already present
+                if (!prevAttendance[name]) {
+                  return {
+                    ...prevAttendance,
+                    [name]: [{ attender: name, timestamp, distance }],
+                  };
+                }
+                return prevAttendance;
+              });
+  
+              break;
+            }
           }
-        }
-      }
+  
+          return { detection, label };
+        })
+      );
+  
+      if (bounding) drawDetections(labeledDetections);
     }, interval * 1000);
-  };  
+  };
+  
+  
+  
 
   const loadReferenceImage = async (imagePaths) => {
     const img = await faceapi.fetchImage(imagePaths[0]); // Take the first image from the set
@@ -95,28 +97,37 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
     return detections ? detections.descriptor : null;
   };
 
-  const drawDetections = (detections) => {
+  const drawDetections = (labeledDetections) => {
     if (canvasRef.current && videoRef.current) {
       const canvas = canvasRef.current;
       const context = canvas.getContext("2d");
       context.clearRect(0, 0, canvas.width, canvas.height);
-
+  
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
-
+  
       faceapi.matchDimensions(canvas, {
         width: videoRef.current.videoWidth,
         height: videoRef.current.videoHeight,
       });
-
-      const resizedDetections = faceapi.resizeResults(detections, {
-        width: canvas.width,
-        height: canvas.height,
+  
+      labeledDetections.forEach(({ detection, label }) => {
+        const box = detection.detection.box;
+  
+        // Draw bounding box
+        context.strokeStyle = "red";
+        context.lineWidth = 1;
+        context.strokeRect(box.x, box.y, box.width, box.height);
+  
+        // Draw label
+        context.fillStyle = "red";
+        context.font = "16px Arial";
+        context.fillText(label.replace("_", " "), box.x, box.y - 10);
       });
-
-      faceapi.draw.drawDetections(canvas, resizedDetections);
     }
   };
+  
+  
 
   return {
     videoRef,

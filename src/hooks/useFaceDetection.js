@@ -16,7 +16,8 @@ const useFaceDetection = (referenceImage,
   }, []);
 
   const loadModels = () => {
-    setLoading(true);  // Set loading to true when models start loading
+      startVideo();
+      setLoading(true);  // Set loading to true when models start loading
 
     Promise.all([
       faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
@@ -25,17 +26,16 @@ const useFaceDetection = (referenceImage,
       faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
     ])
       .then(() => {
-        startVideo();
         detectFace();
       })
       .catch((err) => {
         console.error("Error loading models", err);
+      }).finally(() => {    setLoading(false); // Set loading to false after models and webcam are ready
       })
   };
 
   const startVideo = () => {
 
-    setLoading(false); // Set loading to false after models and webcam are ready
 
     navigator.mediaDevices
       .getUserMedia({ video: true })

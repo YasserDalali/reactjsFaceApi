@@ -17,13 +17,16 @@ function App() {
     interval <type: int > defaut: 1s> */
 
   return (
-    <div className="app bg-gray-800">
+    <div className="app bg-black">
+
       {loading && <LoadingSpinner />}
       <video
         ref={videoRef}
+        className="rounded-3xl px-5"
         autoPlay
         style={{ width: "100vw", height: "100vh" }}
       />
+
       <canvas
         ref={canvasRef}
         style={{

@@ -15,6 +15,7 @@ const useFaceDetection = (referenceImage,
     loadModels();
   }, []);
 
+
   const loadModels = () => {
       startVideo();
       setLoading(true);  // Set loading to true when models start loading
@@ -33,7 +34,10 @@ const useFaceDetection = (referenceImage,
       }).finally(() => {    setLoading(false); // Set loading to false after models and webcam are ready
       })
   };
+  //? ✅ This code snippet loads four face detection models from a specified URI ("/models"), starts the video stream, and sets the loading state to true. Once all models are loaded, it calls the detectFace function. If any errors occur during loading, it logs the error. Finally, it sets the loading state to false after the models and webcam are ready.
+//? -------------------------------------------------------------------------------------------------------
 
+  
   const startVideo = () => {
 
 
@@ -46,6 +50,9 @@ const useFaceDetection = (referenceImage,
         console.log(err);
       });
   };
+    //? ✅ This code snippet requests access to the user's camera and sets the video stream to a video element referenced by videoRef. If the request fails, it logs the error to the console.
+//? -------------------------------------------------------------------------------------------------------
+
 
   const detectFace = () => {
     setInterval(async () => {
@@ -73,6 +80,10 @@ const useFaceDetection = (referenceImage,
       }
     }, interval*1000);
   };
+    //? ✅ This code snippet requests access to the user's camera and sets the video stream to a video element referenced by videoRef. If the request fails, it logs the error to the console.
+//? -------------------------------------------------------------------------------------------------------
+
+
 
   const loadReferenceImage = async (imagePath) => {
     const img = await faceapi.fetchImage(imagePath);
@@ -82,17 +93,37 @@ const useFaceDetection = (referenceImage,
       .withFaceDescriptor();
     return detections ? detections.descriptor : null;
   };
-
   const drawDetections = (detections) => {
-    if (canvasRef.current) {
-      canvasRef.current.innerHTML = faceapi.createCanvasFromMedia(videoRef.current);
-      faceapi.matchDimensions(canvasRef.current, {
-        width: videoRef.current.width,
-        height: videoRef.current.height,
+    if (canvasRef.current && videoRef.current) {
+      // Clear canvas before drawing
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+      context.clearRect(0, 0, canvas.width, canvas.height);
+  
+      // Set canvas dimensions to match video
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+  
+      // Match canvas dimensions with video
+      faceapi.matchDimensions(canvas, {
+        width: videoRef.current.videoWidth,
+        height: videoRef.current.videoHeight,
       });
-      faceapi.draw.drawDetections(canvasRef.current, detections);
+  
+      // Resize detections to match canvas size
+      const resizedDetections = faceapi.resizeResults(detections, {
+        width: canvas.width,
+        height: canvas.height,
+      });
+  
+      // Draw detections
+      faceapi.draw.drawDetections(canvas, resizedDetections);
     }
   };
+  
+    //?  This function draws face detections on a canvas element. It first creates a canvas from a video element, sets the canvas dimensions to match the video, and then uses the face-api.js library to draw the detected faces on the canvas.
+//? -------------------------------------------------------------------------------------------------------
+
 
   return {
     videoRef,

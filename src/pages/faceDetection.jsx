@@ -33,7 +33,6 @@ function FaceDetection() {
         className="rounded-3xl px-5"
         autoPlay
         style={{ width: "100vw", height: "100vh",
-            transform: "scaleX(-1)", // This mirrors the video horizontally
 
          }}
         
@@ -46,7 +45,6 @@ function FaceDetection() {
           left: 0,
           width: "100vw",
           height: "100vh",
-          transform: "scaleX(-1)", // This mirrors the video horizontally
 
         }}
       />

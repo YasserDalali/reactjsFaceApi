@@ -8,12 +8,16 @@ const useFaceDetection = (referenceImage,
   const videoRef = useRef();
   const canvasRef = useRef();
   const [detected, setDetected] = useState(false);
+  const [loading, setLoading] = useState(true); // Track the loading state
+
 
   useEffect(() => {
     loadModels();
   }, []);
 
   const loadModels = () => {
+    setLoading(true);  // Set loading to true when models start loading
+
     Promise.all([
       faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
       faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
@@ -26,7 +30,11 @@ const useFaceDetection = (referenceImage,
       })
       .catch((err) => {
         console.error("Error loading models", err);
-      });
+      }).finally(
+        () => {
+            setLoading(false); // Set loading to false after models and webcam are ready
+        }
+      );
   };
 
   const startVideo = () => {

@@ -2,9 +2,14 @@
 import { useState } from "react";
 import useFaceDetection from "./hooks/useFaceDetection";
 import YasserImg from "./assets/faces/1.jpg";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 function App() {
-  const { videoRef, canvasRef, detected } = useFaceDetection(YasserImg, 0.5, 3);
+  const { videoRef, canvasRef, detected, loading } = useFaceDetection(
+    YasserImg,
+    0.5,
+    3
+  );
 
   /* useFaceDetection(
   referenceImage <type: image>
@@ -12,7 +17,7 @@ function App() {
     interval <type: int > defaut: 1s> */
 
   return (
-    <div className="app">
+    <div className="app bg-gray-800">
       <video
         ref={videoRef}
         autoPlay
@@ -20,9 +25,16 @@ function App() {
       />
       <canvas
         ref={canvasRef}
-        style={{ position: "absolute", top: 0, left: 0 }}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+        }}
       />
-      {detected && <div className="alert">Face Detected!</div>}
+
+      {detected && <div className="bg-emerald-200 text-green-950 rounded-lg p-4 w-1/2 left-1/4  absolute top-3 border-green-700 border-6">Face Detected!</div>}{" "}
     </div>
   );
 }

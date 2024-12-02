@@ -4,7 +4,7 @@ import * as faceapi from "face-api.js";
 
 const useFaceDetection = (referenceImage,
     accuracy=0.6,
-    interval=1) => {
+    interval=1, bounding=true) => {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [detected, setDetected] = useState(false);

@@ -46,6 +46,8 @@ function FaceDetection() {
           left: 0,
           width: "100vw",
           height: "100vh",
+          transform: "scaleX(-1)", // This mirrors the video horizontally
+
         }}
       />
       {detected && (

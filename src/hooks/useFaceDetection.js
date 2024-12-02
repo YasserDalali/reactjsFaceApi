@@ -30,14 +30,13 @@ const useFaceDetection = (referenceImage,
       })
       .catch((err) => {
         console.error("Error loading models", err);
-      }).finally(
-        () => {
-            setLoading(false); // Set loading to false after models and webcam are ready
-        }
-      );
+      })
   };
 
   const startVideo = () => {
+
+    setLoading(false); // Set loading to false after models and webcam are ready
+
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then((currentStream) => {
@@ -99,6 +98,8 @@ const useFaceDetection = (referenceImage,
     videoRef,
     canvasRef,
     detected,
+    loading, // Return loading state here
+
   };
 };
 

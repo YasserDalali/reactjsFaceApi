@@ -18,6 +18,7 @@ function App() {
 
   return (
     <div className="app bg-gray-800">
+      {loading && <LoadingSpinner />}
       <video
         ref={videoRef}
         autoPlay

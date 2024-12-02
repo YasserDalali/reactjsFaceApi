@@ -49,7 +49,7 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
         .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks()
         .withFaceDescriptors();
-
+  
       if (detections.length > 0) {
         for (const name in referenceImages) {
           const referenceImageDescriptor = await loadReferenceImage(referenceImages[name]);
@@ -58,27 +58,33 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
             referenceImageDescriptor,
             detectionsDescriptors[0]
           );
-
+  
           if (distance < accuracy) {
             const timestamp = new Date().toISOString();
-            setAttendance((prevAttendance) => ({
-              ...prevAttendance,
-              [name]: [
-                ...(prevAttendance[name] || []),
-                {
-                  attender: name,
-                  timestamp,
-                  distance,
-                },
-              ],
-            }));
-            
+  
+            setAttendance((prevAttendance) => {
+              // Check if the person is already registered
+              if (!prevAttendance[name]) {
+                return {
+                  ...prevAttendance,
+                  [name]: [
+                    {
+                      attender: name,
+                      timestamp,
+                      distance,
+                    },
+                  ],
+                };
+              }
+              return prevAttendance;
+            });
+  
             if (bounding) drawDetections(detections);
           }
         }
       }
     }, interval * 1000);
-  };
+  };  
 
   const loadReferenceImage = async (imagePaths) => {
     const img = await faceapi.fetchImage(imagePaths[0]); // Take the first image from the set

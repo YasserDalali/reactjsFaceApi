@@ -2,7 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 
-const useFaceDetection = (referenceImage) => {
+const useFaceDetection = (referenceImage,
+    accuracy=0.6,
+    interval=1) => {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [detected, setDetected] = useState(false);
@@ -53,18 +55,16 @@ const useFaceDetection = (referenceImage) => {
           detectionsDescriptors[0]
         );
 
-        if (distance < 0.6) {
+        if (distance < accuracy) {
           if (!detected) {
-            alert("Face Detected!");
+            console.log("Face Detected!");
             setDetected(true);
           }
-        } else {
-          setDetected(false);
-        }
+        } 
 
         drawDetections(detections);
       }
-    }, 1000);
+    }, interval*1000);
   };
 
   const loadReferenceImage = async (imagePath) => {

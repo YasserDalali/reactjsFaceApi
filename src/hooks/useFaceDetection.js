@@ -8,7 +8,7 @@ const useFaceDetection = (referenceImage,
   const videoRef = useRef();
   const canvasRef = useRef();
   const [detected, setDetected] = useState(false);
-  const [loading, setLoading] = useState(true); // Track the loading state
+  const [loading, setLoading] = useState(true);
 
 
   useEffect(() => {
@@ -75,8 +75,8 @@ const useFaceDetection = (referenceImage,
             setDetected(true);
           }
         } 
-
-        drawDetections(detections);
+        bounding && drawDetections(detections);
+        
       }
     }, interval*1000);
   };

@@ -22,7 +22,7 @@ function FaceDetection() {
     YasserImg,
     0.5,
     1,
-    true
+    false
   );
 
   return (

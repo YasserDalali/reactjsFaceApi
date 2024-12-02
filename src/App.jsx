@@ -1,18 +1,25 @@
-import { useRef, useEffect } from "react";
-import "./App.css";
+import { useRef, useEffect, useState } from "react";
 import * as faceapi from "face-api.js";
+import YasserImg from "./assets/faces/1.jpg";
 
 function App() {
   const videoRef = useRef();
   const canvasRef = useRef();
+  const [detected, setDetected] = useState(false);
+  const intervalRef = useRef(null);
 
-  // LOAD FROM USEEFFECT
   useEffect(() => {
     startVideo();
-    videoRef && loadModels();
+    loadModels();
+
+    return () => {
+      // Cleanup the interval on component unmount
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, []);
 
-  // OPEN YOU FACE WEBCAM
   const startVideo = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
@@ -23,57 +30,83 @@ function App() {
         console.log(err);
       });
   };
-  // LOAD MODELS FROM FACE API
 
   const loadModels = () => {
     Promise.all([
-      // THIS FOR FACE DETECT AND LOAD FROM YOU PUBLIC/MODELS DIRECTORY
+      faceapi.nets.ssdMobilenetv1.loadFromUri("/models"), // Load the SSD model explicitly
+
       faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-/*       faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
- */      faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-/*       faceapi.nets.faceExpressionNet.loadFromUri("/models"),
- */    ]).then(() => {
-      faceMyDetect();
-    });
+      faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
+      faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
+    ])
+      .then(() => {
+        detectFace(); // Start face detection after models are loaded
+      })
+      .catch((err) => {
+        console.error("Error loading models", err);
+      });
   };
 
-  const faceMyDetect = () => {
-    setInterval(async () => {
+  const detectFace = () => {
+    intervalRef.current = setInterval(async () => {
       const detections = await faceapi
         .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceDescriptors();
 
+      if (detections.length > 0) {
+        const referenceImage = await loadReferenceImage();
+        const detectionsDescriptors = detections.map((d) => d.descriptor);
+        const distance = faceapi.euclideanDistance(
+          referenceImage,
+          detectionsDescriptors[0]
+        );
 
-      // DRAW YOU FACE IN WEBCAM
-      canvasRef.current.innerHtml = faceapi.createCanvasFromMedia(
-        videoRef.current
-      );
+        if (distance < 0.6) {
+          // Threshold for match
+          if (!detected) {
+            alert("Face Detected!");
+            setDetected(true);
+          }
+        } else {
+          setDetected(false);
+        }
 
+        drawDetections(detections);
+      }
+    }, 1000); // Detection interval
+  };
+
+  const loadReferenceImage = async () => {
+    const img = await faceapi.fetchImage(YasserImg);
+    const detections = await faceapi
+      .detectSingleFace(img)
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+    return detections ? detections.descriptor : null;
+  };
+
+  const drawDetections = (detections) => {
+    if (canvasRef.current) {
+      canvasRef.current.innerHTML = faceapi.createCanvasFromMedia(videoRef.current);
       faceapi.matchDimensions(canvasRef.current, {
-        width: screen.width,
-        height: screen.height,
+        width: videoRef.current.width,
+        height: videoRef.current.height,
       });
-
-      const resized = faceapi.resizeResults(detections, {
-        width: screen.width,
-        height: screen.height,
-      });
-
-      faceapi.draw.drawDetections(canvasRef.current, resized);
-      /*       faceapi.draw.drawFaceLandmarks(canvasRef.current,resized)
-     faceapi.draw.drawFaceExpressions(canvasRef.current,resized)
- */
-    }, 1000);
+      faceapi.draw.drawDetections(canvasRef.current, detections);
+    }
   };
 
   return (
-    <div className="myapp">
-      <div className="appvide">
-        <video crossOrigin="anonymous" style={{ width: "100vw", height: "100vh" }} ref={videoRef} autoPlay></video>
-      </div>
+    <div className="app">
+      <video
+        ref={videoRef}
+        autoPlay
+        style={{ width: "100vw", height: "100vh" }}
+      />
       <canvas
         ref={canvasRef}
-        className="appcanvas"
-        style={{ width: "100vw", height: "100vh" }}
+        style={{ position: "absolute", top: 0, left: 0 }}
       />
     </div>
   );

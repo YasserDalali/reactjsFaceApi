@@ -1,6 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import * as faceapi from "face-api.js";
 
+/**
+ * Custom React hook for face detection and recognition in a video stream.
+ *
+ * This hook initializes video capture from a webcam, loads face detection models,
+ * detects faces in the video stream, and compares them against reference images
+ * to identify and log attendance.
+ *
+ * @param {Object} referenceImages - An object containing names as keys and arrays of image paths as values.
+ * @param {number} [accuracy=0.6] - The accuracy threshold for face recognition. Must be a float between 0.1 and 1.0.
+ * @param {number} [interval=1] - The time interval (in seconds) between each face detection.
+ * @param {boolean} [bounding=true] - Whether to draw bounding boxes around detected faces.
+ *
+ * @returns {Object} - An object containing videoRef, canvasRef, attendance, and loading state.
+ */
 const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, bounding = true) => {
   const videoRef = useRef();
   const canvasRef = useRef();
@@ -43,6 +57,15 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
       });
   };
 
+  /**
+   * Detects faces in the video stream at an interval of {interval} seconds.
+   * Uses the Tiny Face Detector model to detect faces, and then uses the Face Recognition model to compare
+   * the detected faces to the reference images. If a match is found, logs the attendance to the attendance
+   * state and draws a bounding box around the detected face with the label.
+   * @param {number} interval The time interval between each face detection in seconds.
+   * @param {number} accuracy The accuracy of the face detection. Type: float between 0.1-1.0
+   * @param {boolean} bounding Whether to draw bounding boxes around the detected faces. Type: boolean
+   */
   const detectFace = () => {
     setInterval(async () => {
       const detections = await faceapi
@@ -83,11 +106,23 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
   
       if (bounding) drawDetections(labeledDetections);
     }, interval * 1000);
+
   };
   
   
   
 
+  /**
+   * Loads a reference image, detects a single face in the image, and
+   * returns the face descriptor of the detected face. If no face is detected,
+   * returns null.
+   *
+   * @param {string[]} imagePaths An array of image paths. Only the first image
+   * is used.
+   *
+   * @returns {Object|null} The face descriptor of the detected face, or null
+   * if no face is detected.
+   */
   const loadReferenceImage = async (imagePaths) => {
     const img = await faceapi.fetchImage(imagePaths[0]); // Take the first image from the set
     const detections = await faceapi
@@ -97,6 +132,15 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
     return detections ? detections.descriptor : null;
   };
 
+  /**
+   * Draws bounding boxes around the detected faces on the canvas element.
+   *
+   * @param {Object[]} labeledDetections An array of objects with two properties:
+   * - `detection`: A face detection object from the face-api.js library.
+   * - `label`: A string label for the detected face.
+   *
+   * @returns {void}
+   */
   const drawDetections = (labeledDetections) => {
     if (canvasRef.current && videoRef.current) {
       const canvas = canvasRef.current;

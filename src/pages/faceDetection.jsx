@@ -18,13 +18,15 @@ import Alert from "../components/Alert";
 function FaceDetection() {
     const referenceImages = {
       Yasser_Dalali: ['/labels/Yasser_Dalali/1.jpg', '/labels/Yasser_Dalali/2.jpg'],
-      Hamza_Idehmad: ['/labels/Hamza_Idehmad/2.jpg', '/labels/Hamza_Idehmad/1.jpg'],
+      Hamza_Idehmad: ['/labels/Hamza_Idehmad/1.jpg', '/labels/Hamza_Idehmad/2.jpg'],
+      Reda_Aitlhssen: ['/labels/Reda_Aitlhssen/1.jpg'],
+      Zakaria_Benjeddi: ['/labels/Zakaria_Benjeddi/1.jpg'],
     };
   
     const { videoRef, canvasRef, attendance, loading } = useFaceDetection(
       referenceImages,
       0.5,
-      3,
+      2,
       true
     );
   

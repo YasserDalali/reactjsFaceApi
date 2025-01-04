@@ -1,28 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 import * as faceapi from "face-api.js";
 
-/**
- * Custom React hook for face detection and recognition in a video stream.
- *
- * This hook initializes video capture from a webcam, loads face detection models,
- * detects faces in the video stream, and compares them against reference images
- * to identify and log attendance.
- *
- * @param {Object} referenceImages - An object containing names as keys and arrays of image paths as values.
- * @param {number} [accuracy=0.6] - The accuracy threshold for face recognition. Must be a float between 0.1 and 1.0.
- * @param {number} [interval=1] - The time interval (in seconds) between each face detection.
- * @param {boolean} [bounding=true] - Whether to draw bounding boxes around detected faces.
- *
- * @returns {Object} - An object containing videoRef, canvasRef, attendance, and loading state.
- */
 const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, bounding = true) => {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Store detection history as arrays of last N detections
+  const detectionHistoryRef = useRef({});
+  
+  // Configuration for verification
+  const REQUIRED_CONSECUTIVE_DETECTIONS = 3;  // Number of consecutive intervals needed
 
   useEffect(() => {
     loadModels();
+    return () => {
+      // Cleanup detection history on unmount
+      detectionHistoryRef.current = {};
+    };
   }, []);
 
   const loadModels = () => {
@@ -57,80 +53,133 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
       });
   };
 
-  /**
-   * Detects faces in the video stream at an interval of {interval} seconds.
-   * Uses the Tiny Face Detector model to detect faces, and then uses the Face Recognition model to compare
-   * the detected faces to the reference images. If a match is found, logs the attendance to the attendance
-   * state and draws a bounding box around the detected face with the label.
-   * @param {number} interval The time interval between each face detection in seconds.
-   * @param {number} accuracy The accuracy of the face detection. Type: float between 0.1-1.0
-   * @param {boolean} bounding Whether to draw bounding boxes around the detected faces. Type: boolean
-   */
+  const updateDetectionHistory = (name, distance) => {
+    // Initialize history for this person if it doesn't exist
+    if (!detectionHistoryRef.current[name]) {
+      detectionHistoryRef.current[name] = [];
+    }
+
+    // Add new detection
+    detectionHistoryRef.current[name].push({
+      distance: distance,
+      detected: true
+    });
+
+    // Keep only the last N detections
+    if (detectionHistoryRef.current[name].length > REQUIRED_CONSECUTIVE_DETECTIONS) {
+      detectionHistoryRef.current[name].shift();
+    }
+
+    // Check if we have enough consecutive detections
+    if (detectionHistoryRef.current[name].length === REQUIRED_CONSECUTIVE_DETECTIONS) {
+      // Calculate average distance for consistency check
+      const averageDistance = detectionHistoryRef.current[name]
+        .reduce((sum, detection) => sum + detection.distance, 0) 
+        / REQUIRED_CONSECUTIVE_DETECTIONS;
+
+      // Verify if all detections are consistent (within 10% of average)
+      const consistentDetections = detectionHistoryRef.current[name]
+        .every(detection => 
+          Math.abs(detection.distance - averageDistance) < (averageDistance * 0.1)
+        );
+
+      if (consistentDetections) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  const recordMissedDetection = (name) => {
+    if (detectionHistoryRef.current[name]) {
+      // Reset detection history if person is not detected
+      detectionHistoryRef.current[name] = [];
+    }
+  };
+
   const detectFace = () => {
     setInterval(async () => {
       const detections = await faceapi
         .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks()
         .withFaceDescriptors();
+      
+      // Keep track of which names were detected in this interval
+      const detectedNames = new Set();
   
       const labeledDetections = await Promise.all(
         detections.map(async (detection) => {
           let label = "Unknown";
+          let verifiedMatch = false;
   
           for (const name in referenceImages) {
             const referenceImageDescriptor = await loadReferenceImage(referenceImages[name]);
             const distance = faceapi.euclideanDistance(referenceImageDescriptor, detection.descriptor);
   
             if (distance < accuracy) {
-              label = name;
-              const timestamp = new Date().toISOString();
-  
-              setAttendance((prevAttendance) => {
-                // Check if the name is already in the array
-                const alreadyPresent = prevAttendance.some(
-                  (entry) => entry.attender === name
-                );
+              detectedNames.add(name);
+              // Update detection history and check for verification
+              const isVerified = updateDetectionHistory(name, distance);
               
-                // Only add a new entry if not already present
-                if (!alreadyPresent) {
-                  return [
-                    ...prevAttendance,
-                    { attender: name, timestamp, distance },
-                  ];
-                }
-              
-                return prevAttendance;
-              });
+              if (isVerified) {
+                label = name;
+                verifiedMatch = true;
+                const timestamp = new Date().toISOString();
   
-              break;
+                setAttendance((prevAttendance) => {
+                  const alreadyPresent = prevAttendance.some(
+                    (entry) => entry.attender === name
+                  );
+                
+                  if (!alreadyPresent) {
+                    return [
+                      ...prevAttendance,
+                      { 
+                        attender: name, 
+                        timestamp, 
+                        distance, 
+                        verified: true,
+                        consecutiveDetections: REQUIRED_CONSECUTIVE_DETECTIONS 
+                      },
+                    ];
+                  }
+                
+                  return prevAttendance;
+                });
+  
+                break;
+              }
             }
           }
   
-          return { detection, label };
+          // If not verified, show verification progress
+          const detectionCount = detectionHistoryRef.current[label]?.length || 0;
+          const verifyingLabel = verifiedMatch ? 
+            label : 
+            `Verifying... (${detectionCount}/${REQUIRED_CONSECUTIVE_DETECTIONS})`;
+  
+          return { 
+            detection, 
+            label: verifyingLabel,
+            verifiedMatch 
+          };
         })
       );
+
+      // Record missed detections for anyone not detected in this interval
+      Object.keys(referenceImages).forEach(name => {
+        if (!detectedNames.has(name)) {
+          recordMissedDetection(name);
+        }
+      });
   
       if (bounding) drawDetections(labeledDetections);
     }, interval * 1000);
-
   };
-  
-  
-  
 
-  /**
-   * Loads a reference image, detects a single face in the image, and
-   * returns the face descriptor of the detected face. If no face is detected,
-   * returns null.
-   *
-   * @param {string[]} imagePaths An array of image paths. Only the first image
-   * is used.
-   *
-   * @returns {Object|null} The face descriptor of the detected face, or null
-   * if no face is detected.
-   */
   const loadReferenceImage = async (imagePaths) => {
-    const img = await faceapi.fetchImage(imagePaths[0]); // Take the first image from the set
+    const img = await faceapi.fetchImage(imagePaths[0]);
     const detections = await faceapi
       .detectSingleFace(img)
       .withFaceLandmarks()
@@ -138,15 +187,6 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
     return detections ? detections.descriptor : null;
   };
 
-  /**
-   * Draws bounding boxes around the detected faces on the canvas element.
-   *
-   * @param {Object[]} labeledDetections An array of objects with two properties:
-   * - `detection`: A face detection object from the face-api.js library.
-   * - `label`: A string label for the detected face.
-   *
-   * @returns {void}
-   */
   const drawDetections = (labeledDetections) => {
     if (canvasRef.current && videoRef.current) {
       const canvas = canvasRef.current;
@@ -161,23 +201,24 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
         height: videoRef.current.videoHeight,
       });
   
-      labeledDetections.forEach(({ detection, label }) => {
+      labeledDetections.forEach(({ detection, label, verifiedMatch }) => {
         const box = detection.detection.box;
   
+        // Use different colors for verified vs unverified detections
+        const color = verifiedMatch ? "#00FF00" : "#FFA500";
+  
         // Draw bounding box
-        context.strokeStyle = "red";
-        context.lineWidth = 1;
+        context.strokeStyle = color;
+        context.lineWidth = 2;
         context.strokeRect(box.x, box.y, box.width, box.height);
   
         // Draw label
-        context.fillStyle = "red";
+        context.fillStyle = color;
         context.font = "16px Arial";
         context.fillText(label.replace("_", " "), box.x, box.y - 10);
       });
     }
   };
-  
-  
 
   return {
     videoRef,

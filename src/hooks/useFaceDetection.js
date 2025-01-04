@@ -18,7 +18,7 @@ import * as faceapi from "face-api.js";
 const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, bounding = true) => {
   const videoRef = useRef();
   const canvasRef = useRef();
-  const [attendance, setAttendance] = useState({});
+  const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -86,13 +86,19 @@ const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, boundin
               const timestamp = new Date().toISOString();
   
               setAttendance((prevAttendance) => {
-                // Only log if not already present
-                if (!prevAttendance[name]) {
-                  return {
+                // Check if the name is already in the array
+                const alreadyPresent = prevAttendance.some(
+                  (entry) => entry.attender === name
+                );
+              
+                // Only add a new entry if not already present
+                if (!alreadyPresent) {
+                  return [
                     ...prevAttendance,
-                    [name]: [{ attender: name, timestamp, distance }],
-                  };
+                    { attender: name, timestamp, distance },
+                  ];
                 }
+              
                 return prevAttendance;
               });
   

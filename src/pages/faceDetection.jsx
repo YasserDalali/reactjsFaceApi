@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import useFaceDetection from "../hooks/useFaceDetection";
 import LoadingSpinner from "../components/LoadingSpinner";
-import Alert from "../components/Alert";
+
 
 function FaceDetection() {
   const referenceImages = {
@@ -16,7 +16,7 @@ function FaceDetection() {
   
   const { videoRef, canvasRef, attendance, loading } = useFaceDetection(
     referenceImages,
-    0.5,
+    0.7,
     1,
     true
   );
@@ -51,6 +51,9 @@ function FaceDetection() {
     }
   }, [attendance]);
 
+  // Get the most recent attendance log
+  const latestRecord = attendanceWithScreenshots[attendanceWithScreenshots.length - 1];
+
   return (
     <div className="app bg-black">
       {loading && <LoadingSpinner />}
@@ -70,7 +73,7 @@ function FaceDetection() {
           height: "100vh",
         }}
       />
-      <table className="absolute top-10 left-0 z-20 bg-white border rounded-lg border-gray-300 shadow-lg w-[90%]">
+      <table className="absolute bottom-10 left-0 z-20 bg-white border rounded-lg border-gray-300 shadow-lg w-[90%]">
         <thead>
           <tr className="bg-gray-100">
             <th className="px-4 py-2 text-left font-medium text-gray-700">Attender</th>
@@ -81,40 +84,35 @@ function FaceDetection() {
           </tr>
         </thead>
         <tbody>
-          {attendanceWithScreenshots.map((record, index) => (
-            <tr
-              key={index}
-              className={`${
-                index % 2 === 0 ? "bg-white" : "bg-gray-50"
-              } hover:bg-gray-100`}
-            >
-              <td className="px-4 py-2 text-gray-800">{record.attender.replace("_", " ")}</td>
+          {latestRecord && (
+            <tr className="bg-white hover:bg-gray-100">
+              <td className="px-4 py-2 text-gray-800">{latestRecord.attender.replace("_", " ")}</td>
               <td className="px-4 py-2 text-gray-800">
-                {new Date(record.timestamp).toLocaleTimeString()}
+                {new Date(latestRecord.timestamp).toLocaleTimeString()}
               </td>
               <td
                 className={`px-4 py-2 font-semibold ${
-                  record.distance.toFixed(2) < 0.38
+                  latestRecord.distance.toFixed(2) < 0.38
                     ? "text-green-600"
                     : "text-red-600"
                 }`}
               >
-                {record.distance.toFixed(2) < 0.4 ? "Accurate" : "Inaccurate"}
+                {latestRecord.distance.toFixed(2) < 0.4 ? "Accurate" : "Inaccurate"}
               </td>
               <td className="px-4 py-2 text-gray-800">
-                {new Date(record.timestamp) > new Date().setHours(4, 30, 0, 0) ? "LATE" : "ON TIME"}
+                {new Date(latestRecord.timestamp) > new Date().setHours(4, 30, 0, 0) ? "LATE" : "ON TIME"}
               </td>
               <td className="px-4 py-2">
-                {record.screenshot && (
+                {latestRecord.screenshot && (
                   <img 
-                    src={record.screenshot} 
-                    alt={`Screenshot of ${record.attender}`}
+                    src={latestRecord.screenshot} 
+                    alt={`Screenshot of ${latestRecord.attender}`}
                     className="w-24 h-24 object-cover rounded-md"
                   />
                 )}
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

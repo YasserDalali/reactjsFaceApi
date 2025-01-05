@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import * as faceapi from "face-api.js";
 
-const useFaceDetection = (referenceImages, accuracy = 0.6, interval = 1, bounding = true) => {
+const useFaceDetection = (referenceImages, accuracy = 0.7, interval = 1, bounding = true) => {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [attendance, setAttendance] = useState([]);

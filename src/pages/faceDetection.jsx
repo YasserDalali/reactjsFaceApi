@@ -1,18 +1,8 @@
+import React, { useRef, useState, useEffect } from 'react';
 import useFaceDetection from "../hooks/useFaceDetection";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Alert from "../components/Alert";
 
-/**
- * FaceDetection is a component that uses the Face Detection API to recognize faces in a video feed
- * and check attendance based on the detected faces. It uses the useFaceDetection hook to do the
- * heavy lifting and renders the video and canvas elements as well as the attendance list.
- *
- * @param {Object} referenceImages - an object with the names of the students as keys and an array of
- * paths to their reference images as values.
- * @param {number} threshold - the minimum similarity required for a face to be considered a match.
- * @param {number} Refresh time in seconds - the number of seconds the function will iterate over.
- * @param {boolean} drawBox - whether to draw a red box around the detected face.
- */
 function FaceDetection() {
   const referenceImages = {
     Yasser_Dalali: ['/labels/Yasser_Dalali/1.jpg', '/labels/Yasser_Dalali/2.jpg'],
@@ -21,6 +11,9 @@ function FaceDetection() {
     Zakaria_Benjeddi: ['/labels/Zakaria_Benjeddi/1.jpg'],
   };
 
+  // Keep track of attendance records with their screenshots
+  const [attendanceWithScreenshots, setAttendanceWithScreenshots] = useState([]);
+  
   const { videoRef, canvasRef, attendance, loading } = useFaceDetection(
     referenceImages,
     0.5,
@@ -31,6 +24,8 @@ function FaceDetection() {
   // Function to capture screenshot from video
   const captureScreenshot = () => {
     const video = videoRef.current;
+    if (!video) return null;
+    
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -38,6 +33,23 @@ function FaceDetection() {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     return canvas.toDataURL('image/jpeg');
   };
+
+  // Update attendanceWithScreenshots when attendance changes
+  useEffect(() => {
+    if (attendance && attendance.length > attendanceWithScreenshots.length) {
+      // Only capture screenshot for new attendance records
+      const newRecord = attendance[attendance.length - 1];
+      const screenshot = captureScreenshot();
+      
+      setAttendanceWithScreenshots(prev => [
+        ...prev,
+        {
+          ...newRecord,
+          screenshot
+        }
+      ]);
+    }
+  }, [attendance]);
 
   return (
     <div className="app bg-black">
@@ -69,42 +81,40 @@ function FaceDetection() {
           </tr>
         </thead>
         <tbody>
-          {attendance &&
-            attendance.map((e, index) => {
-              const screenshot = captureScreenshot();
-              return (
-                <tr
-                  key={index}
-                  className={`${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } hover:bg-gray-100`}
-                >
-                  <td className="px-4 py-2 text-gray-800">{e.attender.replace("_", " ")}</td>
-                  <td className="px-4 py-2 text-gray-800">
-                    {new Date(e.timestamp).toLocaleTimeString()}
-                  </td>
-                  <td
-                    className={`px-4 py-2 font-semibold ${
-                      e.distance.toFixed(2) < 0.38
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {e.distance.toFixed(2) < 0.4 ? "Accurate" : "Inaccurate"}
-                  </td>
-                  <td className="px-4 py-2 text-gray-800">
-                    {new Date(e.timestamp) > new Date().setHours(4, 30, 0, 0) ? "LATE" : "ON TIME"}
-                  </td>
-                  <td className="px-4 py-2">
-                    <img 
-                      src={screenshot} 
-                      alt={`Screenshot of ${e.attender}`}
-                      className="w-24 h-24 object-cover rounded-md"
-                    />
-                  </td>
-                </tr>
-              );
-            })}
+          {attendanceWithScreenshots.map((record, index) => (
+            <tr
+              key={index}
+              className={`${
+                index % 2 === 0 ? "bg-white" : "bg-gray-50"
+              } hover:bg-gray-100`}
+            >
+              <td className="px-4 py-2 text-gray-800">{record.attender.replace("_", " ")}</td>
+              <td className="px-4 py-2 text-gray-800">
+                {new Date(record.timestamp).toLocaleTimeString()}
+              </td>
+              <td
+                className={`px-4 py-2 font-semibold ${
+                  record.distance.toFixed(2) < 0.38
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                {record.distance.toFixed(2) < 0.4 ? "Accurate" : "Inaccurate"}
+              </td>
+              <td className="px-4 py-2 text-gray-800">
+                {new Date(record.timestamp) > new Date().setHours(4, 30, 0, 0) ? "LATE" : "ON TIME"}
+              </td>
+              <td className="px-4 py-2">
+                {record.screenshot && (
+                  <img 
+                    src={record.screenshot} 
+                    alt={`Screenshot of ${record.attender}`}
+                    className="w-24 h-24 object-cover rounded-md"
+                  />
+                )}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

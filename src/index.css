@@ -11,7 +11,7 @@
 }
 
 body {
-  background-color: #f0f2f5;
+  @apply bg-gray-50 dark:bg-neutral-900 text-gray-900 dark:text-white;
 }
 
 /* Typography Utilities */

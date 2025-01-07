@@ -7,6 +7,7 @@ import Sidebar from './components/SideBar';
 import LeaveManagementPage from './pages/LeaveManagementPage';
 import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/DashboardPage';
+import Navbar from './components/Navbar';
 
 const App = () => {
   return (
@@ -14,9 +15,9 @@ const App = () => {
       <div className="flex">
         {/* Sidebar */}
         <Sidebar /> {/* Use Sidebar component */}
-
+        <Navbar />
         {/* Main content */}
-        <div className="flex-1 p-6 ms-16">
+        <main className="flex-1 p-6 ms-16 mt-16">
           <Routes>
             <Route path="*" element={<DashboardPage />} />
             <Route path="leave-management" element={<LeaveManagementPage />} />
@@ -25,7 +26,7 @@ const App = () => {
             <Route path="/facedetection" element={<FaceDetection />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
           </Routes>
-        </div>
+        </main>
       </div>
     </Router>
   );

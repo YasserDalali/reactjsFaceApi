@@ -1,5 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { motion } from 'framer-motion';
+import AnimatedComponent from '../components/AnimatedComponent';
 import LeaveManagementTable from '../components/LeaveManagementTable';
 
 const LeaveManagementPage = () => {
@@ -21,12 +23,57 @@ const LeaveManagementPage = () => {
   });
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold text-gray-800 dark:text-neutral-200 mb-6">
-        Leave Management
-      </h1>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="p-6"
+    >
+      <AnimatedComponent>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+          Leave Management
+        </h1>
+      </AnimatedComponent>
+
+      {/* Stats Cards could go here */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <AnimatedComponent delay={0.1}>
+          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
+            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
+              Total Requests
+            </h3>
+            <p className="text-3xl font-bold text-gray-800 dark:text-white">
+              {leaveRequests.length}
+            </p>
+          </div>
+        </AnimatedComponent>
+
+        <AnimatedComponent delay={0.2}>
+          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
+            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
+              Pending Requests
+            </h3>
+            <p className="text-3xl font-bold text-yellow-600">
+              {leaveRequests.filter(req => req.status === 'Pending').length}
+            </p>
+          </div>
+        </AnimatedComponent>
+
+        <AnimatedComponent delay={0.3}>
+          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
+            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
+              Approved Leaves
+            </h3>
+            <p className="text-3xl font-bold text-green-600">
+              {leaveRequests.filter(req => req.status === 'Approved').length}
+            </p>
+          </div>
+        </AnimatedComponent>
+      </div>
+
+      {/* Leave Management Table */}
       <LeaveManagementTable leaveData={leaveData} />
-    </div>
+    </motion.div>
   );
 };
 

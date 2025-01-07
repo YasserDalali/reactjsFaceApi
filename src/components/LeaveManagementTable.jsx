@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTable, useSortBy, usePagination, useGlobalFilter } from 'react-table';
 import { ArrowDown, ArrowUp, ArrowUpDown, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import AnimatedTableRow from './AnimatedTableRow';
 
 const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
   const [tableData, setTableData] = useState(initialLeaveData);
@@ -125,6 +126,7 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
   );
 
   return (
+    
     <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg">
       <div className="p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -175,16 +177,19 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
                     ))}
                   </thead>
                   <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 dark:divide-neutral-700">
-                    {page.map((row) => {
+                    {page.map((row, index) => {
                       prepareRow(row);
                       return (
-                        <tr {...row.getRowProps()} className="hover:bg-gray-100 dark:hover:bg-neutral-700">
+                        <AnimatedTableRow key={row.id} index={index}>
                           {row.cells.map((cell) => (
-                            <td {...cell.getCellProps()} className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
+                            <td 
+                              {...cell.getCellProps()} 
+                              className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200"
+                            >
                               {cell.render('Cell')}
                             </td>
                           ))}
-                        </tr>
+                        </AnimatedTableRow>
                       );
                     })}
                   </tbody>
@@ -197,7 +202,7 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
                   <select
                     value={pageSize}
                     onChange={e => setPageSize(Number(e.target.value))}
-                    className="px-3 py-1 border rounded-md"
+                    className="px-3 py-1 border rounded-md dark:bg-neutral-700 dark:border-neutral-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   >
                     {[5, 10, 20].map(size => (
                       <option key={size} value={size}>
@@ -210,7 +215,7 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
                   <button
                     onClick={() => previousPage()}
                     disabled={!canPreviousPage}
-                    className="px-3 py-1 border rounded-md disabled:opacity-50"
+                    className="px-3 py-1 border rounded-md disabled:opacity-50 dark:bg-neutral-700 dark:border-neutral-600 dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors duration-200"
                   >
                     Previous
                   </button>

@@ -1,67 +1,45 @@
-import React from 'react';
-import AttendanceCard from '../components/AttendanceCard';
-import PresenceTable from '../components/PresenceTable';
-import AbsenceTable from '../components/AbsenceTable';
+import React from "react";
+import { useSelector } from "react-redux";
+import PresenceTable from "./../components/PresenceTable";
+import AttendanceCard from "./../components/AttendanceCard";
 
 const AttendancePage = () => {
-  // Sample data
-  const attendanceData = [
-    {
-      name: 'John Doe',
-      time: '08:45 AM',
-      late: 'No',
-      accurateScan: 'Yes',
-      status: 'present',
-      faceImage: 'https://placeimg.com/80/80/people',
-      screenshot: 'https://placeimg.com/640/360/tech',
-    },
-    {
-      name: 'Jane Smith',
-      time: '09:15 AM',
-      late: 'Yes',
-      accurateScan: 'No',
-      status: 'absent',
-      faceImage: 'https://placeimg.com/80/80/people',
-      screenshot: 'https://placeimg.com/640/360/business',
-    },
-    {
-      name: 'Alice Johnson',
-      time: '08:50 AM',
-      late: 'No',
-      accurateScan: 'Yes',
-      status: 'present',
-      faceImage: 'https://placeimg.com/80/80/people',
-      screenshot: 'https://placeimg.com/640/360/people',
-    },
-  ];
+  // Fetching attendance data from the Redux store
+  const attendanceData = useSelector((state) => state.attendance);
 
-  // Filter present and absent employees
-  const presentEmployees = attendanceData.filter(item => item.status === 'present');
-  const absentEmployees = attendanceData.filter(item => item.status === 'absent');
-
-  // Calculate stats
-  const totalEmployees = attendanceData.length;
-  const presentCount = presentEmployees.length;
-  const presencePercentage = ((presentCount / totalEmployees) * 100).toFixed(2);
-  const totalLatenessHours = absentEmployees.filter(item => item.late === 'Yes').length * 1; // Example lateness calculation
+  // Calculate statistics from attendanceData
+  const totalAttendance = attendanceData.length;
+  const onTimeCount = attendanceData.filter(record => !record.lateness).length;
+  const totalLateHours = attendanceData.reduce((total, record) => {
+    return total + (record.lateness ? parseFloat(record.lateness) : 0);
+  }, 0);
 
   return (
-    <div className="p-6">
-          <h1 className="text-3xl font-bold mb-6">Employee Management</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold text-gray-800 dark:text-neutral-200 mb-6">
+        Attendance Records
+      </h1>
       
-      <div className="grid grid-cols-3 gap-6 mb-6">
-        <AttendanceCard title="Present" value={`${presentCount}/${totalEmployees}`} percentage={presencePercentage} latenessHours={totalLatenessHours} />
-        <AttendanceCard title="Presence Percentage" value={`${presencePercentage}%`} />
-        <AttendanceCard title="Total Lateness Hours" value={`${totalLatenessHours} hrs`} />
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <AttendanceCard 
+          title="Total Attendance" 
+          value={totalAttendance}
+          percentage={(totalAttendance / totalAttendance) * 100}
+        />
+        <AttendanceCard 
+          title="On Time" 
+          value={onTimeCount}
+          percentage={(onTimeCount / totalAttendance) * 100}
+        />
+        <AttendanceCard 
+          title="Late Arrivals" 
+          value={totalAttendance - onTimeCount}
+          latenessHours={totalLateHours.toFixed(1)}
+        />
       </div>
-
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">Presence</h2>
-        <PresenceTable data={presentEmployees} />
-
-        <h2 className="text-2xl font-semibold mb-4 mt-6">Absence</h2>
-        <AbsenceTable data={absentEmployees} />
-      </div>
+      
+      <PresenceTable attendanceData={attendanceData} />
     </div>
   );
 };

@@ -125,106 +125,114 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
   );
 
   return (
-    <div className="flex flex-col">
-      <div className="-m-1.5 overflow-x-auto">
-        <div className="p-1.5 min-w-full inline-block align-middle">
-          <div className="overflow-hidden">
-            {/* Search Bar */}
-            <div className="mb-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={globalFilter || ''}
-                  onChange={(e) => setGlobalFilter(e.target.value)}
-                  placeholder="Search leaves..."
-                  className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md"
-                />
-                <Search size={16} className="absolute left-3 top-3 text-gray-400" />
+    <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg">
+      <div className="p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Leave Requests
+        </h3>
+        
+        <div className="flex flex-col">
+          <div className="-m-1.5 overflow-x-auto">
+            <div className="p-1.5 min-w-full inline-block align-middle">
+              {/* Search bar */}
+              <div className="mb-4">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={globalFilter || ''}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
+                    placeholder="Search leave requests..."
+                    className="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-neutral-600 rounded-md dark:bg-neutral-700 dark:text-white"
+                  />
+                  <Search size={16} className="absolute left-3 top-3 text-gray-400" />
+                </div>
               </div>
-            </div>
 
-            {/* Table */}
-            <table {...getTableProps()} className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-              <thead>
-                {headerGroups.map((headerGroup) => (
-                  <tr {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map((column) => (
-                      <th 
-                        {...column.getHeaderProps(column.getSortByToggleProps())}
-                        className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500"
-                      >
-                        <div className="flex items-center gap-x-2">
-                          {column.render('Header')}
-                          <span>
-                            {column.isSorted
-                              ? column.isSortedDesc
-                                ? <ArrowDown size={12} />
-                                : <ArrowUp size={12} />
-                              : <ArrowUpDown size={12} />}
-                          </span>
-                        </div>
-                      </th>
+              {/* Table */}
+              <div className="overflow-hidden border border-gray-200 dark:border-neutral-700 rounded-lg">
+                <table {...getTableProps()} className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+                  <thead>
+                    {headerGroups.map((headerGroup) => (
+                      <tr {...headerGroup.getHeaderGroupProps()}>
+                        {headerGroup.headers.map((column) => (
+                          <th 
+                            {...column.getHeaderProps(column.getSortByToggleProps())}
+                            className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500"
+                          >
+                            <div className="flex items-center gap-x-2">
+                              {column.render('Header')}
+                              <span>
+                                {column.isSorted
+                                  ? column.isSortedDesc
+                                    ? <ArrowDown size={12} />
+                                    : <ArrowUp size={12} />
+                                  : <ArrowUpDown size={12} />}
+                              </span>
+                            </div>
+                          </th>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 dark:divide-neutral-700">
-                {page.map((row) => {
-                  prepareRow(row);
-                  return (
-                    <tr {...row.getRowProps()} className="hover:bg-gray-100 dark:hover:bg-neutral-700">
-                      {row.cells.map((cell) => (
-                        <td {...cell.getCellProps()} className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                          {cell.render('Cell')}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-
-            {/* Pagination */}
-            <div className="flex items-center justify-between py-3">
-              <div className="flex items-center space-x-2">
-                <select
-                  value={pageSize}
-                  onChange={e => setPageSize(Number(e.target.value))}
-                  className="px-3 py-1 border rounded-md"
-                >
-                  {[5, 10, 20].map(size => (
-                    <option key={size} value={size}>
-                      Show {size}
-                    </option>
-                  ))}
-                </select>
+                  </thead>
+                  <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 dark:divide-neutral-700">
+                    {page.map((row) => {
+                      prepareRow(row);
+                      return (
+                        <tr {...row.getRowProps()} className="hover:bg-gray-100 dark:hover:bg-neutral-700">
+                          {row.cells.map((cell) => (
+                            <td {...cell.getCellProps()} className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
+                              {cell.render('Cell')}
+                            </td>
+                          ))}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => previousPage()}
-                  disabled={!canPreviousPage}
-                  className="px-3 py-1 border rounded-md disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                {Array.from({ length: pageCount }, (_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => gotoPage(i)}
-                    className={`px-3 py-1 border rounded-md ${
-                      pageIndex === i ? 'bg-blue-500 text-white' : ''
-                    }`}
+
+              {/* Pagination */}
+              <div className="flex items-center justify-between py-3">
+                <div className="flex items-center space-x-2">
+                  <select
+                    value={pageSize}
+                    onChange={e => setPageSize(Number(e.target.value))}
+                    className="px-3 py-1 border rounded-md"
                   >
-                    {i + 1}
+                    {[5, 10, 20].map(size => (
+                      <option key={size} value={size}>
+                        Show {size}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => previousPage()}
+                    disabled={!canPreviousPage}
+                    className="px-3 py-1 border rounded-md disabled:opacity-50"
+                  >
+                    Previous
                   </button>
-                ))}
-                <button
-                  onClick={() => nextPage()}
-                  disabled={!canNextPage}
-                  className="px-3 py-1 border rounded-md disabled:opacity-50"
-                >
-                  Next
-                </button>
+                  {Array.from({ length: pageCount }, (_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => gotoPage(i)}
+                      className={`px-3 py-1 border rounded-md ${
+                        pageIndex === i ? 'bg-blue-500 text-white' : ''
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => nextPage()}
+                    disabled={!canNextPage}
+                    className="px-3 py-1 border rounded-md disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             </div>
           </div>

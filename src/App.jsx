@@ -6,6 +6,7 @@ import FaceDetection from './pages/faceDetection';
 import Sidebar from './components/SideBar';
 import LeaveManagementPage from './pages/LeaveManagementPage';
 import ProfilePage from './pages/ProfilePage';
+import DashboardPage from './pages/DashboardPage';
 
 const App = () => {
   return (
@@ -17,7 +18,7 @@ const App = () => {
         {/* Main content */}
         <div className="flex-1 p-6">
           <Routes>
-            <Route path="*" element={<h1>Home</h1>} />
+            <Route path="*" element={<DashboardPage />} />
             <Route path="leave-management" element={<LeaveManagementPage />} />
             <Route path="/employees" element={<EmployeePage />} />
             <Route path="/attendance" element={<AttendancePage />} />

@@ -8,27 +8,33 @@ import LeaveManagementPage from './pages/LeaveManagementPage';
 import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/DashboardPage';
 import Navbar from './components/Navbar';
+import SettingsPage from './pages/SettingsPage';
+import { Provider } from 'react-redux';
+import store from './context/store';
 
 const App = () => {
   return (
-    <Router>
-      <div className="flex">
-        {/* Sidebar */}
-        <Sidebar /> {/* Use Sidebar component */}
-        <Navbar />
-        {/* Main content */}
-        <main className="flex-1 p-6 ms-16 mt-16">
-          <Routes>
-            <Route path="*" element={<DashboardPage />} />
-            <Route path="leave-management" element={<LeaveManagementPage />} />
-            <Route path="/employees" element={<EmployeePage />} />
-            <Route path="/attendance" element={<AttendancePage />} />
-            <Route path="/facedetection" element={<FaceDetection />} />
-            <Route path="/profile/:id" element={<ProfilePage />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <div className="flex">
+          {/* Sidebar */}
+          <Sidebar /> {/* Use Sidebar component */}
+          <Navbar />
+          {/* Main content */}
+          <main className="flex-1 p-6 ms-16 mt-16">
+            <Routes>
+              <Route path="*" element={<DashboardPage />} />
+              <Route path="leave-management" element={<LeaveManagementPage />} />
+              <Route path="/employees" element={<EmployeePage />} />
+              <Route path="/attendance" element={<AttendancePage />} />
+              <Route path="/facedetection" element={<FaceDetection />} />
+              <Route path="/profile/:id" element={<ProfilePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </Provider>
   );
 };
 

@@ -1,12 +1,11 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { User, Coffee } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedComponent from '../components/AnimatedComponent';
 
-const ProfilePage = () => {
-  const { id } = useParams();
+const ProfilePage = ({ employeeId }) => {
+  const id = employeeId;
   const employees = useSelector((state) => state.employees);
   const leaveRequests = useSelector((state) => state.leaveRequests);
   const attendance = useSelector((state) => state.attendance);

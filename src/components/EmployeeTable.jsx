@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AnimatedComponent from './AnimatedComponent';
 import AnimatedTableRow from './AnimatedTableRow';
+import ModalButton from './Modal';
+import ProfilePage from '../pages/ProfilePage';
 
 const EmployeeTable = ({ employees }) => {
   const data = React.useMemo(() => employees, [employees]);
@@ -19,12 +21,13 @@ const EmployeeTable = ({ employees }) => {
         Header: 'Name',
         accessor: 'name',
         Cell: ({ value, row }) => (
-          <Link 
-            to={`/profile/${row.original.id}`}
-            className="text-blue-600 hover:text-blue-800 hover:underline"
+          <ModalButton 
+            value={value}
+            title="Employee Profile"
+            buttonStyle="text"
           >
-            {value}
-          </Link>
+            <ProfilePage employeeId={row.original.id} />
+          </ModalButton>
         ),
       },
       {

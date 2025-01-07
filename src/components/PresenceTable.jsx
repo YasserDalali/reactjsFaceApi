@@ -4,6 +4,8 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AnimatedTableRow from './AnimatedTableRow';
+import ModalButton from './Modal';
+import ProfilePage from '../pages/ProfilePage';
 
 const PresenceTable = ({ attendanceData = [] }) => {
   const data = React.useMemo(() => attendanceData, [attendanceData]);
@@ -14,12 +16,14 @@ const PresenceTable = ({ attendanceData = [] }) => {
         Header: 'Employee',
         accessor: 'employee',
         Cell: ({ value, row }) => (
-          <Link 
-            to={`/profile/${row.original.id}`}
+          <ModalButton 
+            value={value}
+            title="Employee Profile"
+            buttonStyle="text"
             className="text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
           >
-            {value}
-          </Link>
+            <ProfilePage employeeId={row.original.id} />
+          </ModalButton>
         ),
       },
       {

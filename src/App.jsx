@@ -28,7 +28,6 @@ const App = () => {
               <Route path="/employees" element={<EmployeePage />} />
               <Route path="/attendance" element={<AttendancePage />} />
               <Route path="/facedetection" element={<FaceDetection />} />
-              <Route path="/profile/:id" element={<ProfilePage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </main>

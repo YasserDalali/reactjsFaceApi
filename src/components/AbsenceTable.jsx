@@ -1,6 +1,8 @@
 import React from 'react';
 import { useTable, useSortBy, usePagination, useGlobalFilter } from 'react-table';
 import { Search } from 'lucide-react';
+import ModalButton from './Modal';
+import ProfilePage from '../pages/ProfilePage';
 
 const AbsenceTable = ({ data: initialData = [] }) => {
   const data = React.useMemo(() => initialData, [initialData]);
@@ -13,7 +15,14 @@ const AbsenceTable = ({ data: initialData = [] }) => {
         Cell: ({ value, row }) => (
           <div className="flex items-center">
             <img src={row.original.faceImage} alt={value} className="w-8 h-8 rounded-full object-cover mr-4" />
-            {value}
+            <ModalButton 
+              value={value}
+              title="Employee Profile"
+              buttonStyle="text"
+              className="text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              <ProfilePage employeeId={row.original.id} />
+            </ModalButton>
           </div>
         ),
       },

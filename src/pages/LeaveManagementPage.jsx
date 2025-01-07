@@ -1,35 +1,24 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import LeaveManagementTable from '../components/LeaveManagementTable';
 
 const LeaveManagementPage = () => {
-  // Sample data - replace with your actual data source
-  const leaveData = [
-    {
-      employee: 'John Doe',
-      leaveType: 'Sick Leave',
-      startDate: '2024-03-01',
-      endDate: '2024-03-03',
-      duration: 3,
-      status: 'Pending',
-    },
-    {
-      employee: 'Jane Smith',
-      leaveType: 'Vacation',
-      startDate: '2024-03-15',
-      endDate: '2024-03-22',
-      duration: 8,
-      status: 'Approved',
-    },
-    {
-      employee: 'Mike Johnson',
-      leaveType: 'Personal',
-      startDate: '2024-03-10',
-      endDate: '2024-03-10',
-      duration: 1,
-      status: 'Rejected',
-    },
-    // Add more sample data as needed
-  ];
+  const leaveRequests = useSelector((state) => state.leaveRequests);
+  const employees = useSelector((state) => state.employees);
+
+  // Combine leave requests with employee data
+  const leaveData = leaveRequests.map(request => {
+    const employee = employees.find(emp => emp.id === request.employeeId);
+    return {
+      id: request.requestId,
+      employee: employee?.name || 'Unknown',
+      leaveType: request.type,
+      startDate: request.startDate,
+      endDate: request.endDate,
+      duration: calculateDuration(request.startDate, request.endDate),
+      status: request.status,
+    };
+  });
 
   return (
     <div className="p-4">
@@ -39,6 +28,13 @@ const LeaveManagementPage = () => {
       <LeaveManagementTable leaveData={leaveData} />
     </div>
   );
+};
+
+const calculateDuration = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diffTime = Math.abs(end - start);
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
 
 export default LeaveManagementPage; 

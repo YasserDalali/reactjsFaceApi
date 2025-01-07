@@ -1,45 +1,29 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { User, Coffee } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { User } from 'lucide-react';
 
 const ProfilePage = () => {
   const { id } = useParams();
-  
-  // This would normally come from your data store
-  const employeeData = {
-    id: id,
-    name: "John Doe",
-    email: "john.doe@example.com",
-    position: "Software Engineer",
-    department: "Engineering",
-    startDate: "2023-01-15",
-    leaveBalance: 15,
-    attendance: {
-      present: 45,
-      absent: 3,
-      late: 2
-    },
-    leaves: [
-      { type: "Vacation", status: "Approved", duration: "3 days", date: "2024-02-15" },
-      { type: "Sick Leave", status: "Completed", duration: "1 day", date: "2024-01-10" }
-    ],
-    breaks: [
-      { 
-        date: "2024-03-18",
-        breaks: [
-          { startTime: "10:30", endTime: "10:45", duration: "15min", type: "Coffee Break" },
-          { startTime: "13:00", endTime: "14:00", duration: "1hr", type: "Lunch Break" },
-          { startTime: "15:30", endTime: "15:45", duration: "15min", type: "Coffee Break" }
-        ]
-      },
-      { 
-        date: "2024-03-17",
-        breaks: [
-          { startTime: "10:15", endTime: "10:30", duration: "15min", type: "Coffee Break" },
-          { startTime: "13:00", endTime: "13:45", duration: "45min", type: "Lunch Break" }
-        ]
-      }
-    ]
+  const employees = useSelector((state) => state.employees);
+  const leaveRequests = useSelector((state) => state.leaveRequests);
+  const attendance = useSelector((state) => state.attendance);
+  const reports = useSelector((state) => state.reports);
+
+  const employeeData = employees.find(emp => emp.id === parseInt(id));
+  const employeeLeaves = leaveRequests.filter(leave => leave.employeeId === parseInt(id));
+  const employeeAttendance = attendance.filter(record => record.employeeId === parseInt(id));
+  const employeeReports = reports.filter(report => report.employeeId === parseInt(id));
+
+  if (!employeeData) {
+    return <div>Employee not found</div>;
+  }
+
+  // Calculate attendance statistics
+  const attendanceStats = {
+    present: employeeAttendance.filter(record => record.status === "Present").length,
+    absent: employeeAttendance.filter(record => record.status === "Absent").length,
+    late: employeeAttendance.filter(record => record.lateness).length
   };
 
   return (

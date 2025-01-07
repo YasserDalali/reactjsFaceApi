@@ -21,6 +21,16 @@ const initialLeaveRequests = [
   
   const leaveRequestReducer = (state = initialLeaveRequests, action) => {
     switch (action.type) {
+      case 'ADD_LEAVE_REQUEST':
+        return [...state, action.payload];
+      case 'UPDATE_LEAVE_STATUS':
+        return state.map(request =>
+          request.requestId === action.payload.requestId
+            ? { ...request, status: action.payload.status }
+            : request
+        );
+      case 'DELETE_LEAVE_REQUEST':
+        return state.filter(request => request.requestId !== action.payload);
       default:
         return state;
     }

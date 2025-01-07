@@ -1,14 +1,17 @@
 import React from 'react';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useDispatch } from 'react-redux';
 
 const EmployeeForm = ({ onClose }) => {
+  const dispatch = useDispatch();
+
   return (
     <Formik
       initialValues={{
         name: '',
         email: '',
-        jobTitle: '',
+        position: '',
         phone: '',
       }}
       validationSchema={Yup.object({
@@ -16,17 +19,20 @@ const EmployeeForm = ({ onClose }) => {
         email: Yup.string()
           .email('Invalid email address')
           .required('Email is required'),
-        jobTitle: Yup.string().required('Job title is required'),
+        position: Yup.string().required('Position is required'),
         phone: Yup.string().required('Phone number is required'),
       })}
       onSubmit={(values, { resetForm }) => {
-        // Placeholder logic for saving the form
-        alert('Form submitted:', values);
-
-        // Call onClose to close the modal
+        dispatch({
+          type: 'ADD_EMPLOYEE',
+          payload: {
+            id: Date.now(),
+            ...values,
+            startDate: new Date().toISOString().split('T')[0],
+            leaveBalance: 20,
+          }
+        });
         onClose();
-
-        // Optionally reset the form after submission
         resetForm();
       }}
     >
@@ -62,16 +68,16 @@ const EmployeeForm = ({ onClose }) => {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700">
-            Job Title
+          <label htmlFor="position" className="block text-sm font-medium text-gray-700">
+            Position
           </label>
           <Field
-            name="jobTitle"
+            name="position"
             type="text"
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <ErrorMessage
-            name="jobTitle"
+            name="position"
             component="div"
             className="text-red-500 text-xs mt-1"
           />

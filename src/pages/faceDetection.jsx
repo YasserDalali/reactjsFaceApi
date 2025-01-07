@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import useFaceDetection from "../hooks/useFaceDetection";
 import LoadingSpinner from "../components/LoadingSpinner";
+import CameraSelect from '../components/CameraSelect';
 
 
 function FaceDetection() {
@@ -54,8 +55,24 @@ function FaceDetection() {
   // Get the most recent attendance log
   const latestRecord = attendanceWithScreenshots[attendanceWithScreenshots.length - 1];
 
+  const handleDeviceSelect = (deviceId) => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      // Stop current stream
+      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      
+      // Start new stream with selected device
+      navigator.mediaDevices.getUserMedia({
+        video: { deviceId: { exact: deviceId } }
+      }).then(stream => {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      });
+    }
+  };
+
   return (
     <div className="app bg-black">
+      <CameraSelect onDeviceSelect={handleDeviceSelect} />
       {loading && <LoadingSpinner />}
       <video
         ref={videoRef}

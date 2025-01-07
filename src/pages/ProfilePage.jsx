@@ -18,7 +18,14 @@ const ProfilePage = () => {
   const employeeReports = reports.filter(report => report.employeeId === parseInt(id));
 
   if (!employeeData) {
-    return <div>Employee not found</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Employee Not Found</h2>
+          <p className="text-gray-600 dark:text-neutral-300">The requested employee profile could not be found.</p>
+        </div>
+      </div>
+    );
   }
 
   // Calculate attendance statistics
@@ -44,19 +51,23 @@ const ProfilePage = () => {
             </div>
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {employeeData.name}
+                {employeeData.name || 'Name Not Available'}
               </h1>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-gray-600 dark:text-neutral-300">{employeeData.position}</p>
-                  <p className="text-gray-600 dark:text-neutral-300">{employeeData.department}</p>
+                  <p className="text-gray-600 dark:text-neutral-300">
+                    {employeeData.position || 'Position Not Set'}
+                  </p>
+                  <p className="text-gray-600 dark:text-neutral-300">
+                    {employeeData.department || 'Department Not Set'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-600 dark:text-neutral-300">
-                    Employee ID: {employeeData.id}
+                    Employee ID: {employeeData.id || 'N/A'}
                   </p>
                   <p className="text-gray-600 dark:text-neutral-300">
-                    {employeeData.email}
+                    {employeeData.email || 'Email Not Available'}
                   </p>
                 </div>
               </div>
@@ -73,7 +84,7 @@ const ProfilePage = () => {
               Leave Balance
             </h3>
             <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-              {employeeData.leaveBalance} days
+              {employeeData.leaveBalance ?? 'N/A'} {employeeData.leaveBalance ? 'days' : ''}
             </p>
           </div>
         </AnimatedComponent>
@@ -84,8 +95,11 @@ const ProfilePage = () => {
               Attendance Rate
             </h3>
             <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-              {Math.round((employeeData.attendance.present / 
-                (employeeData.attendance.present + employeeData.attendance.absent)) * 100)}%
+              {employeeData.attendance && 
+               (employeeData.attendance.present + employeeData.attendance.absent) > 0 ? 
+                `${Math.round((employeeData.attendance.present / 
+                  (employeeData.attendance.present + employeeData.attendance.absent)) * 100)}%` : 
+                'No Data'}
             </p>
           </div>
         </AnimatedComponent>
@@ -96,7 +110,7 @@ const ProfilePage = () => {
               Late Arrivals
             </h3>
             <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
-              {employeeData.attendance.late}
+              {employeeData.attendance?.late ?? 'No Data'}
             </p>
           </div>
         </AnimatedComponent>
@@ -109,24 +123,28 @@ const ProfilePage = () => {
             Recent Leaves
           </h3>
           <div className="divide-y divide-gray-200 dark:divide-neutral-700">
-            {employeeData.leaves.map((leave, index) => (
-              <div key={index} className="py-4 flex justify-between items-center">
-                <div>
-                  <p className="font-medium text-gray-900 dark:text-white">{leave.type}</p>
-                  <p className="text-sm text-gray-600 dark:text-neutral-300">{leave.date}</p>
+            {employeeData.leaves && employeeData.leaves.length > 0 ? (
+              employeeData.leaves.map((leave, index) => (
+                <div key={index} className="py-4 flex justify-between items-center">
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white">{leave.type}</p>
+                    <p className="text-sm text-gray-600 dark:text-neutral-300">{leave.date}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium
+                      ${leave.status === 'Approved' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 
+                        'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'}`}>
+                      {leave.status}
+                    </span>
+                    <span className="ml-4 text-sm text-gray-600 dark:text-neutral-300">
+                      {leave.duration}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium
-                    ${leave.status === 'Approved' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 
-                      'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'}`}>
-                    {leave.status}
-                  </span>
-                  <span className="ml-4 text-sm text-gray-600 dark:text-neutral-300">
-                    {leave.duration}
-                  </span>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="py-4 text-gray-600 dark:text-neutral-300">No leave records available</p>
+            )}
           </div>
         </div>
       </AnimatedComponent>
@@ -142,55 +160,59 @@ const ProfilePage = () => {
           </div>
 
           <div className="space-y-6">
-            {employeeData.breaks.map((day, dayIndex) => (
-              <div key={dayIndex} className="border-b border-gray-200 dark:border-neutral-700 last:border-0 pb-4 last:pb-0">
-                <h4 className="text-md font-medium text-gray-900 dark:text-white mb-3">
-                  {new Date(day.date).toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </h4>
-                
-                <div className="relative">
-                  {/* Timeline line */}
-                  <div className="absolute left-2 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-neutral-700"></div>
+            {employeeData.breaks && employeeData.breaks.length > 0 ? (
+              employeeData.breaks.map((day, dayIndex) => (
+                <div key={dayIndex} className="border-b border-gray-200 dark:border-neutral-700 last:border-0 pb-4 last:pb-0">
+                  <h4 className="text-md font-medium text-gray-900 dark:text-white mb-3">
+                    {new Date(day.date).toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </h4>
                   
-                  {/* Break items */}
-                  <div className="space-y-4">
-                    {day.breaks.map((breakItem, breakIndex) => (
-                      <div key={breakIndex} className="flex items-start ml-6">
-                        {/* Timeline dot */}
-                        <div className="absolute left-0 w-4 h-4 bg-blue-500 rounded-full border-2 border-white dark:border-neutral-800 mt-1"></div>
-                        
-                        {/* Break content */}
-                        <div className="flex-1 bg-gray-50 dark:bg-neutral-900 rounded-lg p-3">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <p className="font-medium text-gray-900 dark:text-white">
-                                {breakItem.type}
-                              </p>
-                              <p className="text-sm text-gray-600 dark:text-neutral-400">
-                                Duration: {breakItem.duration}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                {breakItem.startTime}
-                              </p>
-                              <p className="text-sm text-gray-600 dark:text-neutral-400">
-                                {breakItem.endTime}
-                              </p>
+                  <div className="relative">
+                    {/* Timeline line */}
+                    <div className="absolute left-2 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-neutral-700"></div>
+                    
+                    {/* Break items */}
+                    <div className="space-y-4">
+                      {day.breaks.map((breakItem, breakIndex) => (
+                        <div key={breakIndex} className="flex items-start ml-6">
+                          {/* Timeline dot */}
+                          <div className="absolute left-0 w-4 h-4 bg-blue-500 rounded-full border-2 border-white dark:border-neutral-800 mt-1"></div>
+                          
+                          {/* Break content */}
+                          <div className="flex-1 bg-gray-50 dark:bg-neutral-900 rounded-lg p-3">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-medium text-gray-900 dark:text-white">
+                                  {breakItem.type || 'Break'}
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-neutral-400">
+                                  Duration: {breakItem.duration || 'Not specified'}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                  {breakItem.startTime || 'Start time not set'}
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-neutral-400">
+                                  {breakItem.endTime || 'End time not set'}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-gray-600 dark:text-neutral-300">No break schedule available</p>
+            )}
           </div>
         </div>
       </AnimatedComponent>

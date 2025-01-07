@@ -1,52 +1,92 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { User, Clock, Camera, Home, Calendar, Settings } from 'lucide-react'; // Added Settings icon
+import { Link, useLocation } from 'react-router-dom';
+import { User, Clock, Camera, Home, Calendar, Settings, BarChart3 } from 'lucide-react';
 
 const Sidebar = () => {
+  const location = useLocation();
+
+  const menuItems = [
+    { path: '/', icon: Home, label: 'Dashboard' },
+    { path: '/leave-management', icon: Calendar, label: 'Leave Management' },
+    { path: '/employees', icon: User, label: 'Employees' },
+    { path: '/attendance', icon: Clock, label: 'Attendance' },
+    { path: '/facedetection', icon: Camera, label: 'Face Detection' },
+    { path: '/reports', icon: BarChart3, label: 'Reports' },
+  ];
+
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <div className="h-100 min-h-screen bg-gray-800 text-white p-4 z-50">
-
-
-      <div className='flex flex-col justify-between h-full'>
-
-      <div className="space-y-6 ">
-        {/* Dashboard Link */}
-        <Link to="/" className="flex items-center justify-center text-lg hover:bg-gray-700 p-2 rounded">
-          <Home size={20} />
-        </Link>
-
-        {/* Leave Management Link */}
-        <Link to="/leave-management" className="flex items-center justify-center text-lg hover:bg-gray-700 p-2 rounded">
-          <Calendar size={20} />
-        </Link>
-
-        {/* Employee Page Link */}
-        <Link to="/employees" className="flex items-center justify-center text-lg hover:bg-gray-700 p-2 rounded">
-          <User width={20} height={20} />
-        </Link>
-
-        {/* Attendance Page Link */}
-        <Link to="/attendance" className="flex items-center justify-center text-lg hover:bg-gray-700 p-2 rounded">
-          <Clock size={20} />
-        </Link>
-
-        {/* Face Detection Link */}
-        <Link to="/facedetection" className="flex items-center justify-center text-lg hover:bg-gray-700 p-2 rounded">
-          <Camera size={20} />
-        </Link>
+    <aside className="fixed  h-screen w-16 flex flex-col bg-white dark:bg-neutral-800 border-r border-gray-200 dark:border-neutral-700 z-50">
+      {/* Logo Area */}
+      <div className="flex items-center justify-center h-16 border-b border-gray-200 dark:border-neutral-700">
+        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+          <span className="text-white font-bold text-xl">F</span>
+        </div>
       </div>
 
-   
+      {/* Navigation Items */}
+      <nav className="flex-1 py-4">
+        <div className="px-2 space-y-2">
+          {menuItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`relative flex items-center justify-center h-10 w-10 mx-auto rounded-lg
+                transition-all duration-200 ease-in-out group
+                ${isActive(item.path)
+                  ? 'bg-blue-500 text-white'
+                  : 'text-gray-500 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-700'
+                }`}
+            >
+              <item.icon 
+                size={20} 
+                className={`transition-transform duration-200 group-hover:scale-110
+                  ${isActive(item.path) ? 'transform scale-110' : ''}`}
+              />
+              
+              {/* Tooltip */}
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs
+                rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible
+                transition-all duration-200 whitespace-nowrap z-50">
+                {item.label}
+                {/* Triangle */}
+                <div className="absolute top-1/2 -left-1 -mt-1 border-4 border-transparent
+                  border-r-gray-900"></div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </nav>
 
-      {/* Settings Link at the bottom */}
-      <div className="mt-auto">
-        <Link to="/settings" className="flex items-center justify-center text-lg hover:bg-gray-700 p-2 rounded">
-          <Settings size={20} />
+      {/* Settings */}
+      <div className="p-2 border-t border-gray-200 dark:border-neutral-700">
+        <Link
+          to="/settings"
+          className={`relative flex items-center justify-center h-10 w-10 mx-auto rounded-lg
+            transition-all duration-200 ease-in-out group
+            ${isActive('/settings')
+              ? 'bg-blue-500 text-white'
+              : 'text-gray-500 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-700'
+            }`}
+        >
+          <Settings 
+            size={20} 
+            className={`transition-transform duration-200 group-hover:scale-110
+              ${isActive('/settings') ? 'transform scale-110' : ''}`}
+          />
+          
+          {/* Settings Tooltip */}
+          <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs
+            rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible
+            transition-all duration-200 whitespace-nowrap z-50">
+            Settings
+            <div className="absolute top-1/2 -left-1 -mt-1 border-4 border-transparent
+              border-r-gray-900"></div>
+          </div>
         </Link>
       </div>
-
-      </div>
-    </div>
+    </aside>
   );
 };
 

@@ -16,7 +16,7 @@ const App = () => {
         <Sidebar /> {/* Use Sidebar component */}
 
         {/* Main content */}
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-6 ms-16">
           <Routes>
             <Route path="*" element={<DashboardPage />} />
             <Route path="leave-management" element={<LeaveManagementPage />} />

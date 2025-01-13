@@ -196,75 +196,12 @@ const DashboardPage = () => {
       transition={{ duration: 0.5 }}
       className="p-6"
     >
-      <AnimatedComponent>
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-          Dashboard
-        </h1>
-      </AnimatedComponent>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <AnimatedComponent delay={0.1}>
-          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
-            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
-              Attendance Rate
-            </h3>
-            <p className="text-3xl font-bold text-gray-800 dark:text-white">
-              {Math.round((totalPresent / attendance.length) * 100)}%
-            </p>
-            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
-              {totalPresent} out of {attendance.length}
-            </p>
-          </div>
-        </AnimatedComponent>
-
-        <AnimatedComponent delay={0.2}>
-          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
-            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
-              Average Lateness
-            </h3>
-            <p className="text-3xl font-bold text-yellow-600">
-              {Math.round(averageLateness)}m
-            </p>
-            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
-              Per late arrival
-            </p>
-          </div>
-        </AnimatedComponent>
-
-        <AnimatedComponent delay={0.3}>
-          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
-            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
-              On-Time Rate
-            </h3>
-            <p className="text-3xl font-bold text-green-600">
-              {Math.round(((totalPresent - totalLate) / totalPresent) * 100)}%
-            </p>
-            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
-              Of present employees
-            </p>
-          </div>
-        </AnimatedComponent>
-
-        <AnimatedComponent delay={0.3}>
-          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
-            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
-              Absent Today
-            </h3>
-            <p className="text-3xl font-bold text-red-600">
-              {totalAbsent}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
-              {Math.round((totalAbsent / attendance.length) * 100)}% of workforce
-            </p>
-          </div>
-        </AnimatedComponent>
-
+      
         {/* AI Report Card */}
         <AnimatedComponent delay={0.4}>
           <div
             onClick={() => setIsConfirmModalOpen(true)}
-            className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg p-6 cursor-pointer transform transition-transform hover:scale-105"
+            className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg p-6 cursor-pointer transform transition-all hover:from-purple-600 hover:to-indigo-700 transition-all mb-7"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -296,6 +233,64 @@ const DashboardPage = () => {
             </p>
           </div>
         </AnimatedComponent>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <AnimatedComponent delay={0.1}>
+          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
+            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
+              Attendance Rate
+            </h3>
+            <p className="text-3xl font-bold text-gray-800 dark:text-white">
+              {Math.round((totalPresent / attendance.length) * 100)}%
+            </p>
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
+              {totalPresent} out of {attendance.length}
+            </p>
+          </div>
+        </AnimatedComponent>
+
+        <AnimatedComponent delay={0.2}>
+          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
+            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
+              Average Lateness
+            </h3>
+            <p className="text-3xl font-bold text-yellow-600">
+              {Math.round(averageLateness)}m
+            </p>
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
+              Per late arrival
+            </p>
+          </div>
+        </AnimatedComponent>
+
+{/*         <AnimatedComponent delay={0.3}>
+          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
+            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
+              On-Time Rate
+            </h3>
+            <p className="text-3xl font-bold text-green-600">
+              {Math.round(((totalPresent - totalLate) / totalPresent) * 100)}%
+            </p>
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
+              Of present employees
+            </p>
+          </div>
+        </AnimatedComponent> */}
+
+        <AnimatedComponent delay={0.3}>
+          <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
+            <h3 className="text-gray-500 dark:text-neutral-400 text-sm font-medium">
+              Absent Today
+            </h3>
+            <p className="text-3xl font-bold text-red-600">
+              {totalAbsent}
+            </p>
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
+              {Math.round((totalAbsent / attendance.length) * 100)}% of workforce
+            </p>
+          </div>
+        </AnimatedComponent>
+
       </div>
 
       {/* Charts Grid */}

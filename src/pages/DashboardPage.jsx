@@ -1,18 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import ReactApexChart from 'react-apexcharts';
 import { motion } from 'framer-motion';
 import AnimatedComponent from '../components/AnimatedComponent';
+import AIReportModal from '../components/AIReportModal';
+import { generateAIReport } from '../utils/ReportAIAnalyse';
 
 const DashboardPage = () => {
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportData, setReportData] = useState(null);
   const attendance = useSelector((state) => state.attendance);
   const employees = useSelector((state) => state.employees);
+
+  const handleGenerateReport = async () => {
+    setIsReportModalOpen(true);
+    setReportData(null);
+    try {
+      const report = await generateAIReport();
+      setReportData(report);
+    } catch (error) {
+      console.error('Error generating report:', error);
+      // You might want to show an error message to the user here
+    }
+  };
 
   // Calculate attendance statistics
   const totalPresent = attendance.filter(record => record.status === "Present").length;
   const totalAbsent = attendance.filter(record => record.status === "Absent").length;
   const totalLate = attendance.filter(record => record.lateness).length;
-  
+
   // Calculate average lateness in minutes
   const averageLateness = attendance
     .filter(record => record.lateness)
@@ -189,6 +205,43 @@ const DashboardPage = () => {
             </p>
           </div>
         </AnimatedComponent>
+
+        {/* AI Report Card */}
+        <AnimatedComponent delay={0.4}>
+          <div
+            onClick={handleGenerateReport}
+            className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg p-6 cursor-pointer transform transition-transform hover:scale-105"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-white text-sm font-medium">
+                  AI Insights
+                </h3>
+                <p className="text-2xl font-bold text-white mt-2">
+                  Generate Report
+                </p>
+              </div>
+              <div className="bg-white/20 p-3 rounded-lg">
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <p className="text-white/80 text-sm mt-4">
+              Click to generate AI-powered insights about employee performance and engagement
+            </p>
+          </div>
+        </AnimatedComponent>
       </div>
 
       {/* Charts Grid */}
@@ -285,6 +338,13 @@ const DashboardPage = () => {
           </div>
         </div>
       </AnimatedComponent>
+
+      {/* AI Report Modal */}
+      <AIReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        reportData={reportData}
+      />
     </motion.div>
   );
 };

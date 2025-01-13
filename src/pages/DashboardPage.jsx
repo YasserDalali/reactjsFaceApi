@@ -1,23 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ReactApexChart from 'react-apexcharts';
 import { motion } from 'framer-motion';
 import AnimatedComponent from '../components/AnimatedComponent';
 import AIReportModal from '../components/AIReportModal';
+import AIReportConfirmModal from '../components/AIReportConfirmModal';
 import { generateAIReport } from '../utils/ReportAIAnalyse';
+
+const MAX_DAILY_REPORTS = 10;
+const REPORTS_STORAGE_KEY = 'ai_reports_usage';
 
 const DashboardPage = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [reportData, setReportData] = useState(null);
+  const [reportsLeft, setReportsLeft] = useState(MAX_DAILY_REPORTS);
+  const [isCachedData, setIsCachedData] = useState(false);
   const attendance = useSelector((state) => state.attendance);
   const employees = useSelector((state) => state.employees);
 
+  useEffect(() => {
+    // Load and check reports usage
+    const checkReportsUsage = () => {
+      const today = new Date().toDateString();
+      const usage = JSON.parse(localStorage.getItem(REPORTS_STORAGE_KEY) || '{}');
+
+      if (usage.date !== today) {
+        // Reset for new day
+        localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify({
+          date: today,
+          count: 0
+        }));
+        setReportsLeft(MAX_DAILY_REPORTS);
+      } else {
+        setReportsLeft(MAX_DAILY_REPORTS - usage.count);
+      }
+    };
+
+    checkReportsUsage();
+  }, []);
+
+  const updateReportsUsage = () => {
+    const today = new Date().toDateString();
+    const usage = JSON.parse(localStorage.getItem(REPORTS_STORAGE_KEY) || '{}');
+
+    const newCount = (usage.count || 0) + 1;
+    localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify({
+      date: today,
+      count: newCount
+    }));
+
+    setReportsLeft(MAX_DAILY_REPORTS - newCount);
+  };
+
   const handleGenerateReport = async () => {
+    setIsConfirmModalOpen(false);
     setIsReportModalOpen(true);
     setReportData(null);
+    setIsCachedData(false);
+
     try {
+      const startTime = Date.now();
       const report = await generateAIReport();
+      const endTime = Date.now();
+
+      // If response time is very quick, it's likely cached data
+      setIsCachedData(endTime - startTime < 500);
       setReportData(report);
+
+      // Only update usage if it's not cached data
+      if (!isCachedData) {
+        updateReportsUsage();
+      }
     } catch (error) {
       console.error('Error generating report:', error);
       // You might want to show an error message to the user here
@@ -209,7 +263,7 @@ const DashboardPage = () => {
         {/* AI Report Card */}
         <AnimatedComponent delay={0.4}>
           <div
-            onClick={handleGenerateReport}
+            onClick={() => setIsConfirmModalOpen(true)}
             className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg p-6 cursor-pointer transform transition-transform hover:scale-105"
           >
             <div className="flex items-center justify-between">
@@ -238,7 +292,7 @@ const DashboardPage = () => {
               </div>
             </div>
             <p className="text-white/80 text-sm mt-4">
-              Click to generate AI-powered insights about employee performance and engagement
+              {reportsLeft} reports remaining today. Click to generate AI-powered insights.
             </p>
           </div>
         </AnimatedComponent>
@@ -339,11 +393,20 @@ const DashboardPage = () => {
         </div>
       </AnimatedComponent>
 
-      {/* AI Report Modal */}
+      {/* Confirmation Modal */}
+      <AIReportConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleGenerateReport}
+        reportsLeft={reportsLeft}
+      />
+
+      {/* Report Modal */}
       <AIReportModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         reportData={reportData}
+        isCachedData={isCachedData}
       />
     </motion.div>
   );

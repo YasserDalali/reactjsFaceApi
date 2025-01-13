@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const AIReportModal = ({ isOpen, onClose, reportData }) => {
+const AIReportModal = ({ isOpen, onClose, reportData, isCachedData }) => {
     if (!isOpen) return null;
 
     return (
@@ -13,7 +13,17 @@ const AIReportModal = ({ isOpen, onClose, reportData }) => {
                 className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto m-4"
             >
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white">AI Analysis Report</h2>
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">AI Analysis Report</h2>
+                        {isCachedData && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 mt-2">
+                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                Using cached data
+                            </span>
+                        )}
+                    </div>
                     <button
                         onClick={onClose}
                         className="text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-white"

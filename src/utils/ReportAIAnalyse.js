@@ -96,10 +96,58 @@ export const employeeRecords = [
     },
 ];
 
-const genAI = new GoogleGenerativeAI("AIzaSyCSx4dD-DeaX6dqRtuqGMj5u_8qRU8qsDE");
+// Get API key from environment variables
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
+if (!API_KEY) {
+    throw new Error('VITE_GEMINI_API_KEY is not set in environment variables');
+}
+
+const genAI = new GoogleGenerativeAI(API_KEY);
+
+const REPORT_CACHE_KEY = 'ai_report_cache';
+
+// Helper function to get cache data
+const getReportCache = () => {
+    try {
+        return JSON.parse(localStorage.getItem(REPORT_CACHE_KEY) || '{}');
+    } catch {
+        return {};
+    }
+};
+
+// Helper function to save cache data
+const saveReportCache = (data, employeeData) => {
+    const cache = {
+        timestamp: Date.now(),
+        data,
+        employeeDataHash: JSON.stringify(employeeData)
+    };
+    localStorage.setItem(REPORT_CACHE_KEY, JSON.stringify(cache));
+};
+
+// Helper function to check if cache is valid
+const isCacheValid = (cache, currentData) => {
+    if (!cache.timestamp || !cache.data || !cache.employeeDataHash) return false;
+
+    // Check if data is from today
+    const today = new Date().toDateString();
+    const cacheDate = new Date(cache.timestamp).toDateString();
+    if (today !== cacheDate) return false;
+
+    // Check if employee data has changed
+    return cache.employeeDataHash === JSON.stringify(currentData);
+};
 
 export const generateAIReport = async () => {
     try {
+        // Check cache first
+        const cache = getReportCache();
+        if (isCacheValid(cache, employeeRecords)) {
+            console.log('Using cached report data');
+            return cache.data;
+        }
+
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `Analyze this employee data and provide insights focusing on:
@@ -126,12 +174,14 @@ Return ONLY a valid JSON object with this structure (no markdown, no backticks, 
 
         // Clean the response text by removing any markdown formatting
         const cleanJson = responseText
-            .replace(/```json\s*/g, '')  // Remove ```json
-            .replace(/```\s*/g, '')      // Remove remaining ```
-            .trim();                     // Remove extra whitespace
+            .replace(/```json\s*/g, '')
+            .replace(/```\s*/g, '')
+            .trim();
 
         try {
             const response = JSON.parse(cleanJson);
+            // Cache the successful response
+            saveReportCache(response, employeeRecords);
             return response;
         } catch (parseError) {
             console.error('Failed to parse JSON:', cleanJson);

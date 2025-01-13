@@ -8,10 +8,15 @@
 cp .env.example .env
 ```
 
-2. Add your Gemini API key to the `.env` file:
+2. Add your API keys to the `.env` file:
 
 ```env
+# Gemini AI API Key
 VITE_GEMINI_API_KEY=your_api_key_here
+
+# Supabase Configuration
+VITE_SUPABASE_URL=your_supabase_url_here
+VITE_SUPABASE_API_KEY=your_supabase_api_key_here
 ```
 
 3. Never commit the `.env` file to version control. It's already added to `.gitignore`.
@@ -37,6 +42,7 @@ npm run dev
 - AI-powered employee analytics
 - Real-time monitoring
 - Performance insights
+- Supabase database integration
 
 ## Security Notes
 
@@ -44,3 +50,4 @@ npm run dev
 - Use environment variables for sensitive information
 - Regularly rotate your API keys
 - Monitor API usage to prevent abuse
+- Store sensitive data only in your Supabase database

@@ -8,9 +8,12 @@ import AnimatedTableRow from './AnimatedTableRow';
 import ModalButton from './Modal';
 import ProfilePage from '../pages/ProfilePage';
 
+
+
+
 const EmployeeTable = ({ employees }) => {
   const data = React.useMemo(() => employees, [employees]);
-
+  
   const columns = React.useMemo(
     () => [
       {

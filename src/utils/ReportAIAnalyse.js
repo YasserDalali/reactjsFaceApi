@@ -161,13 +161,17 @@ Data: ${JSON.stringify(employeeRecords)}
 
 Return ONLY a valid JSON object with this structure (no markdown, no backticks, no json keyword):
 {
-  "highRiskEmployees": ["Employee Name 1", "Employee Name 2"],
+  "highRiskEmployees": ["Employee Name 1", "Employee Name 2", ...],
   "latenessAnalysis": "Analysis text here",
   "trainingImpact": "Analysis text here",
   "workloadConcerns": "Analysis text here",
   "engagementSummary": "Analysis text here",
-  "recommendations": ["Recommendation 1", "Recommendation 2"]
-}`;
+  "recommendations": ["Recommendation 1", "Recommendation 2", ...]
+}
+  
+Instructions:
+- Answer should be in french
+- the answers should be simple in language, yet full of informations and context. what metrics you based off on? ect...`;
 
         const result = await model.generateContent(prompt);
         const responseText = result.response.text();

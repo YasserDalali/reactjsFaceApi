@@ -49,4 +49,3 @@ const initialAttendance = [
   };
   
   export default attendanceReducer;
-  

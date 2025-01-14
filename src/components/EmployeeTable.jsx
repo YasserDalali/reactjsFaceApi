@@ -42,12 +42,12 @@ const EmployeeTable = ({ employees }) => {
         accessor: 'position',
       },
       {
-        Header: 'Start Date',
-        accessor: 'startDate',
+        Header: 'Hire Date',
+        accessor: 'hire_date',
       },
       {
         Header: 'Leave Balance',
-        accessor: 'leaveBalance',
+        accessor: 'leave_balance',
       },
       {
         Header: 'Actions',

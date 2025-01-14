@@ -1,20 +1,42 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useFetchAttendance } from '../hooks/useFetchAttendance';
 import { motion } from 'framer-motion';
 import AnimatedComponent from '../components/AnimatedComponent';
 import PresenceTable from "./../components/PresenceTable";
 import AttendanceCard from "./../components/AttendanceCard";
 
 const AttendancePage = () => {
-  // Fetching attendance data from the Redux store
-  const attendanceData = useSelector((state) => state.attendance);
+  const { attendance, loading, error } = useFetchAttendance();
 
-  // Calculate statistics from attendanceData
-  const totalAttendance = attendanceData.length;
-  const onTimeCount = attendanceData.filter(record => !record.lateness).length;
-  const totalLateHours = attendanceData.reduce((total, record) => {
-    return total + (record.lateness ? parseFloat(record.lateness) : 0);
-  }, 0);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg text-red-800 dark:text-red-200">
+          <h3 className="text-lg font-semibold">Error Loading Attendance</h3>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toLocaleDateString('en-GB'); // Returns YYYY-MM-DD
+
+  // Calculate statistics from today's attendance data
+  const totalAttendance = 0;
+  const onTimeCount = 0;
+  const lateCount = 0;
+
+  // Calculate total late hours for today
+
 
   return (
     <motion.div
@@ -25,38 +47,47 @@ const AttendancePage = () => {
     >
       <AnimatedComponent>
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-          Attendance Records
+          Today's Attendance
         </h1>
       </AnimatedComponent>
-      
+
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <AnimatedComponent delay={0.1}>
-          <AttendanceCard 
-            title="Total Attendance" 
-            value={totalAttendance}
-            percentage={(totalAttendance / totalAttendance) * 100}
+          <AttendanceCard
+            title="Present Today"
+            value={0}
+            percentage={0}
+            subtitle={`out of 0 employees`}
           />
         </AnimatedComponent>
 
         <AnimatedComponent delay={0.2}>
-          <AttendanceCard 
-            title="On Time" 
-            value={onTimeCount}
-            percentage={(onTimeCount / totalAttendance) * 100}
+          <AttendanceCard
+            title="On Time Today"
+            value={0}
+            percentage={0}
+            subtitle={`0% of present employees`}
           />
         </AnimatedComponent>
 
         <AnimatedComponent delay={0.3}>
-          <AttendanceCard 
-            title="Late Arrivals" 
-            value={totalAttendance - onTimeCount}
-            latenessHours={totalLateHours.toFixed(1)}
+          <AttendanceCard
+            title="Late Today"
+            value={0}
+            /* latenessHours={0} */
+            subtitle={`Total late hours: 0`}
           />
         </AnimatedComponent>
       </div>
-      
-      <PresenceTable attendanceData={attendanceData} />
+
+      {/* Show all attendance records in the table */}
+      <AnimatedComponent delay={0.4}>
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+          All Attendance Records
+        </h2>
+        <PresenceTable attendanceData={attendance} />
+      </AnimatedComponent>
     </motion.div>
   );
 };

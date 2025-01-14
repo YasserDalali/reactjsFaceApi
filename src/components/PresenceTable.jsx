@@ -1,43 +1,47 @@
 import React from "react";
 import { useTable, useSortBy, usePagination, useGlobalFilter } from 'react-table';
 import { ArrowDown, ArrowUp, ArrowUpDown, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AnimatedTableRow from './AnimatedTableRow';
-import ModalButton from './Modal';
-import ProfilePage from '../pages/ProfilePage';
+
 
 const PresenceTable = ({ attendanceData = [] }) => {
   const data = React.useMemo(() => attendanceData, [attendanceData]);
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    });
+  };
+
+  const formatDetails = (details, status) => {
+    if (status === 'absent' || !details) return '';
+    return details.split('T')[1].substring(0, 5); // Get HH:mm from the timestamp
+  };
 
   const columns = React.useMemo(
     () => [
       {
         Header: 'Employee',
-        accessor: 'employee',
-        Cell: ({ value, row }) => (
-          <ModalButton 
-            value={value}
-            title="Employee Profile"
-            buttonStyle="text"
-            className="text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
-          >
-            <ProfilePage employeeId={row.original.id} />
-          </ModalButton>
-        ),
+        accessor: 'employees.name',
       },
       {
         Header: 'Date',
-        accessor: 'date',
+        accessor: 'checkdate',
+        Cell: ({ value }) => formatDate(value)
       },
       {
         Header: 'Status',
         accessor: 'status',
         Cell: ({ value }) => (
           <span className={`px-2 py-1 rounded-full text-sm font-medium
-            ${value === 'Present' 
+            ${value === 'present' 
               ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' 
-              : value === 'Late'
+              : value === 'late'
               ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
               : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'}`
           }>
@@ -47,14 +51,14 @@ const PresenceTable = ({ attendanceData = [] }) => {
       },
       {
         Header: 'Details',
-        accessor: 'details',
+        accessor: row => formatDetails(row.checkdate, row.status)
       },
       {
         Header: 'Lateness',
         accessor: 'lateness',
         Cell: ({ value }) => (
           <span className="text-yellow-600 dark:text-yellow-400">
-            {value || 'N/A'}
+            {value || ''}
           </span>
         ),
       },

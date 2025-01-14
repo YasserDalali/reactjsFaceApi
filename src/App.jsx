@@ -26,6 +26,7 @@ const App = () => {
               <Route path="*" element={<DashboardPage />} />
               <Route path="leave-management" element={<LeaveManagementPage />} />
               <Route path="/employees" element={<EmployeePage />} />
+              <Route path="/employees/:id" element={<ProfilePage />} />
               <Route path="/attendance" element={<AttendancePage />} />
               <Route path="/facedetection" element={<FaceDetection />} />
               <Route path="/settings" element={<SettingsPage />} />

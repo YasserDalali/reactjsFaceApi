@@ -13,7 +13,7 @@ import ProfilePage from '../pages/ProfilePage';
 
 const EmployeeTable = ({ employees }) => {
   const data = React.useMemo(() => employees, [employees]);
-  
+
   const columns = React.useMemo(
     () => [
       {
@@ -24,13 +24,12 @@ const EmployeeTable = ({ employees }) => {
         Header: 'Name',
         accessor: 'name',
         Cell: ({ value, row }) => (
-          <ModalButton 
-            value={value}
-            title="Employee Profile"
-            buttonStyle="text"
+          <Link
+            to={`/employees/${row.original.id}`}
+            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
           >
-            <ProfilePage employeeId={row.original.id} />
-          </ModalButton>
+            {value}
+          </Link>
         ),
       },
       {
@@ -99,7 +98,7 @@ const EmployeeTable = ({ employees }) => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Employee List
           </h3>
-          
+
           <div className="flex flex-col">
             <div className="-m-1.5 overflow-x-auto">
               <div className="p-1.5 min-w-full inline-block align-middle">
@@ -124,7 +123,7 @@ const EmployeeTable = ({ employees }) => {
                       {headerGroups.map((headerGroup) => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
                           {headerGroup.headers.map((column) => (
-                            <th 
+                            <th
                               {...column.getHeaderProps(column.getSortByToggleProps())}
                               className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500"
                             >
@@ -190,7 +189,7 @@ const EmployeeTable = ({ employees }) => {
                     >
                       Previous
                     </button>
-                    
+
                     <div className="flex items-center space-x-1">
                       {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
                         let pageNum;
@@ -203,16 +202,15 @@ const EmployeeTable = ({ employees }) => {
                         } else {
                           pageNum = pageIndex - 2 + i;
                         }
-                        
+
                         return (
                           <button
                             key={pageNum}
                             onClick={() => gotoPage(pageNum)}
-                            className={`px-3 py-1 border rounded-md transition-colors ${
-                              pageIndex === pageNum 
-                                ? 'bg-blue-500 text-white border-blue-500' 
-                                : 'hover:bg-gray-50 dark:hover:bg-neutral-700 dark:border-neutral-600 dark:text-white'
-                            }`}
+                            className={`px-3 py-1 border rounded-md transition-colors ${pageIndex === pageNum
+                              ? 'bg-blue-500 text-white border-blue-500'
+                              : 'hover:bg-gray-50 dark:hover:bg-neutral-700 dark:border-neutral-600 dark:text-white'
+                              }`}
                           >
                             {pageNum + 1}
                           </button>

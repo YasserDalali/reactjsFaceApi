@@ -3,6 +3,9 @@ import { useTable, useSortBy, usePagination, useGlobalFilter } from 'react-table
 import { ArrowDown, ArrowUp, ArrowUpDown, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedTableRow from './AnimatedTableRow';
+import ModalButton from "./Modal";
+import ProfilePage from "../pages/ProfilePage";
+import { Link } from "react-router-dom";
 
 
 const PresenceTable = ({ attendanceData = [] }) => {
@@ -28,6 +31,14 @@ const PresenceTable = ({ attendanceData = [] }) => {
       {
         Header: 'Employee',
         accessor: 'employees.name',
+        Cell: ({ value, row }) => (
+          <Link
+            to={`/employees/${row.original.employee_id}`}
+            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            {value}
+          </Link>
+        ),
       },
       {
         Header: 'Date',

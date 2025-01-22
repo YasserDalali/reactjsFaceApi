@@ -23,6 +23,18 @@ export const employeeRecords = async () => {
     }
 };
 
+export const attendanceRecords = async () => {
+    try {
+        const { data: attendance, error: attendanceError } = await sb
+            .from('attendance')
+            .select(`*`);
+        return attendance;
+    } catch (error) {
+        console.error('Error fetching attendance records:', error);
+        return { attendance: [] };
+    }
+}
+
 // Get API key from environment variables
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -70,21 +82,8 @@ export const generateAIReport = async () => {
     try {
         // Get employee data first
         const employeeData = await employeeRecords();
+        const attendanceData = await attendanceRecords();
         console.log('Retrieved employee data:', employeeData);
-
-        if (!employeeData?.employees?.length || !employeeData?.attendance?.length) {
-            console.error('No employee or attendance data available');
-            throw new Error('No data available for analysis');
-        }
-
-        // Check cache first
-        const cache = getReportCache();
-        if (isCacheValid(cache, employeeData)) {
-            console.log('Using cached report data');
-            return cache.data;
-        }
-
-        console.log('Initializing AI model with API key:', API_KEY ? 'Present' : 'Missing');
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `Analyze this employee data and provide insights focusing on:
@@ -95,7 +94,7 @@ export const generateAIReport = async () => {
 5. Engagement Levels: Use satisfaction and feedback metrics
 
 Data Employees: ${JSON.stringify(employeeData)}
-Data Attendance: ${JSON.stringify(attendance)}
+Data Attendance: ${JSON.stringify(attendanceData)}
 
 Return ONLY a valid JSON object with this structure (no markdown, no backticks, no json keyword):
 {

@@ -3,6 +3,51 @@ import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import AnimatedComponent from '../components/AnimatedComponent';
 import LeaveManagementTable from '../components/LeaveManagementTable';
+import LeaveCalendar from '../components/LeaveCalendar';
+
+// Mock data for the calendar
+const mockAbsences = [
+  {
+    id: 1,
+    employee: 'John Doe',
+    leaveType: 'Vacation',
+    startDate: '2024-03-15',
+    endDate: '2024-03-20',
+    status: 'Approved'
+  },
+  {
+    id: 2,
+    employee: 'Jane Smith',
+    leaveType: 'Sick Leave',
+    startDate: '2024-03-18',
+    endDate: '2024-03-19',
+    status: 'Approved'
+  },
+  {
+    id: 3,
+    employee: 'Mike Johnson',
+    leaveType: 'Personal',
+    startDate: '2024-03-25',
+    endDate: '2024-03-26',
+    status: 'Pending'
+  },
+  {
+    id: 4,
+    employee: 'Sarah Williams',
+    leaveType: 'Vacation',
+    startDate: '2024-04-01',
+    endDate: '2024-04-10',
+    status: 'Approved'
+  },
+  {
+    id: 5,
+    employee: 'David Brown',
+    leaveType: 'Other',
+    startDate: '2024-03-22',
+    endDate: '2024-03-23',
+    status: 'Approved'
+  }
+];
 
 const LeaveManagementPage = () => {
   const leaveRequests = useSelector((state) => state.leaveRequests);
@@ -35,7 +80,7 @@ const LeaveManagementPage = () => {
         </h1>
       </AnimatedComponent>
 
-      {/* Stats Cards could go here */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <AnimatedComponent delay={0.1}>
           <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6">
@@ -69,6 +114,11 @@ const LeaveManagementPage = () => {
             </p>
           </div>
         </AnimatedComponent>
+      </div>
+
+      {/* Calendar View */}
+      <div className="mb-6">
+        <LeaveCalendar absences={mockAbsences} />
       </div>
 
       {/* Leave Management Table */}

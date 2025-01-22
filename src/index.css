@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,7 +6,7 @@
 
 @layer base {
   html {
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
   }
 }
 
@@ -66,12 +66,12 @@ body {
 }
 
 :root {
-  --scrollbar-thumb: #D1D5DB; /* gray-300 */
-  --scrollbar-track: #F3F4F6; /* gray-100 */
+  --scrollbar-thumb: #d1d5db; /* gray-300 */
+  --scrollbar-track: #f3f4f6; /* gray-100 */
 }
 
 :root.dark {
-  --scrollbar-thumb: #4B5563; /* neutral-600 */
+  --scrollbar-thumb: #4b5563; /* neutral-600 */
   --scrollbar-track: #262626; /* neutral-800 */
 }
 
@@ -79,4 +79,87 @@ body {
 .modal-content {
   max-height: calc(100vh - 8rem);
   overflow-y: auto;
+}
+
+/* React Big Calendar Custom Styles */
+.rbc-calendar {
+  @apply font-sans;
+}
+
+/* Header styles */
+.rbc-toolbar {
+  @apply mb-4;
+}
+
+.rbc-toolbar button {
+  @apply bg-white dark:bg-neutral-700 text-gray-700 dark:text-neutral-200 border border-gray-300 dark:border-neutral-600 rounded-md px-3 py-1 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400;
+}
+
+.rbc-toolbar button.rbc-active {
+  @apply bg-blue-500 text-white border-blue-500 dark:bg-blue-600 dark:border-blue-600;
+}
+
+/* Month view styles */
+.rbc-month-view {
+  @apply border-gray-200 dark:border-neutral-700;
+}
+
+.rbc-header {
+  @apply bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 font-medium py-2 border-b border-gray-200 dark:border-neutral-700;
+}
+
+.rbc-month-row {
+  @apply border-gray-200 dark:border-neutral-700;
+}
+
+.rbc-day-bg {
+  @apply border-gray-200 dark:border-neutral-700;
+}
+
+.rbc-off-range-bg {
+  @apply bg-gray-50 dark:bg-neutral-800/50;
+}
+
+.rbc-today {
+  @apply bg-blue-50 dark:bg-blue-900/20;
+}
+
+/* Event styles */
+.rbc-event {
+  @apply bg-blue-500 dark:bg-blue-600 border-none rounded-md;
+}
+
+.rbc-event-content {
+  @apply text-xs font-medium;
+}
+
+/* Time grid styles */
+.rbc-time-view {
+  @apply border-gray-200 dark:border-neutral-700;
+}
+
+.rbc-time-header {
+  @apply border-gray-200 dark:border-neutral-700;
+}
+
+.rbc-time-content {
+  @apply border-gray-200 dark:border-neutral-700;
+}
+
+.rbc-time-slot {
+  @apply text-gray-500 dark:text-neutral-400;
+}
+
+/* Date cell styles */
+.rbc-date-cell {
+  @apply text-gray-700 dark:text-neutral-300 p-1;
+}
+
+.rbc-date-cell.rbc-now {
+  @apply font-bold text-blue-600 dark:text-blue-400;
+}
+
+/* Selected styles */
+.rbc-selected-cell {
+  @apply bg-blue-50 dark:bg-blue-900/20;
 }

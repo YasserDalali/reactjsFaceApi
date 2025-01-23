@@ -88,78 +88,78 @@ body {
 
 /* Header styles */
 .rbc-toolbar {
-  @apply mb-4;
+  @apply mb-6;
 }
 
 .rbc-toolbar button {
-  @apply bg-white dark:bg-neutral-700 text-gray-700 dark:text-neutral-200 border border-gray-300 dark:border-neutral-600 rounded-md px-3 py-1 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400;
+  @apply bg-white dark:bg-neutral-800 text-gray-800 dark:text-neutral-100 border border-gray-200 dark:border-neutral-600 rounded-lg px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-50 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-sky-400 dark:focus:ring-sky-500 transition-colors;
 }
 
 .rbc-toolbar button.rbc-active {
-  @apply bg-blue-500 text-white border-blue-500 dark:bg-blue-600 dark:border-blue-600;
+  @apply bg-sky-500 text-white border-sky-500 dark:bg-sky-600 dark:border-sky-600 shadow-md;
 }
 
 /* Month view styles */
 .rbc-month-view {
-  @apply border-gray-200 dark:border-neutral-700;
+  @apply border-gray-100 dark:border-neutral-700 rounded-lg overflow-hidden shadow-sm;
 }
 
 .rbc-header {
-  @apply bg-gray-50 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300 font-medium py-2 border-b border-gray-200 dark:border-neutral-700;
+  @apply bg-gray-50 dark:bg-neutral-800 text-gray-800 dark:text-neutral-200 font-semibold py-3 border-b border-gray-100 dark:border-neutral-700;
 }
 
 .rbc-month-row {
-  @apply border-gray-200 dark:border-neutral-700;
+  @apply border-gray-100 dark:border-neutral-700;
 }
 
 .rbc-day-bg {
-  @apply border-gray-200 dark:border-neutral-700;
+  @apply border-gray-100 dark:border-neutral-700;
 }
 
 .rbc-off-range-bg {
-  @apply bg-gray-50 dark:bg-neutral-800/50;
+  @apply bg-gray-50/50 dark:bg-neutral-800/30;
 }
 
 .rbc-today {
-  @apply bg-blue-50 dark:bg-blue-900/20;
+  @apply bg-sky-50 dark:bg-sky-900/20;
 }
 
 /* Event styles */
 .rbc-event {
-  @apply bg-blue-500 dark:bg-blue-600 border-none rounded-md;
+  @apply bg-gradient-to-r from-violet-200 to-pink-200 dark:from-violet-800 dark:to-pink-800 border-none rounded-lg shadow-sm;
 }
 
 .rbc-event-content {
-  @apply text-xs font-medium;
+  @apply text-sm font-medium text-gray-800 dark:text-neutral-100;
 }
 
 /* Time grid styles */
 .rbc-time-view {
-  @apply border-gray-200 dark:border-neutral-700;
+  @apply border-gray-100 dark:border-neutral-700 rounded-lg overflow-hidden;
 }
 
 .rbc-time-header {
-  @apply border-gray-200 dark:border-neutral-700;
+  @apply border-gray-100 dark:border-neutral-700;
 }
 
 .rbc-time-content {
-  @apply border-gray-200 dark:border-neutral-700;
+  @apply border-gray-100 dark:border-neutral-700;
 }
 
 .rbc-time-slot {
-  @apply text-gray-500 dark:text-neutral-400;
+  @apply text-gray-600 dark:text-neutral-300;
 }
 
 /* Date cell styles */
 .rbc-date-cell {
-  @apply text-gray-700 dark:text-neutral-300 p-1;
+  @apply text-gray-800 dark:text-neutral-200 p-2 text-sm;
 }
 
 .rbc-date-cell.rbc-now {
-  @apply font-bold text-blue-600 dark:text-blue-400;
+  @apply font-bold text-sky-600 dark:text-sky-400;
 }
 
 /* Selected styles */
 .rbc-selected-cell {
-  @apply bg-blue-50 dark:bg-blue-900/20;
+  @apply bg-sky-50 dark:bg-sky-900/30 transition-colors;
 }

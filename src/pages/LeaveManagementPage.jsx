@@ -11,39 +11,39 @@ const mockAbsences = [
     id: 1,
     employee: 'John Doe',
     leaveType: 'Vacation',
-    startDate: '2024-03-15',
-    endDate: '2024-03-20',
+    startDate: '2025-01-15',
+    endDate: '2025-01-20',
     status: 'Approved'
   },
   {
     id: 2,
     employee: 'Jane Smith',
     leaveType: 'Sick Leave',
-    startDate: '2024-03-18',
-    endDate: '2024-03-19',
+    startDate: '2025-01-18',
+    endDate: '2025-01-19',
     status: 'Approved'
   },
   {
     id: 3,
     employee: 'Mike Johnson',
     leaveType: 'Personal',
-    startDate: '2024-03-25',
-    endDate: '2024-03-26',
+    startDate: '2025-01-25',
+    endDate: '2025-01-26',
     status: 'Pending'
   },
   {
     id: 4,
     employee: 'Sarah Williams',
     leaveType: 'Vacation',
-    startDate: '2024-04-01',
-    endDate: '2024-04-10',
+    startDate: '2025-01-01',
+    endDate: '2025-01-10',
     status: 'Approved'
   },
   {
     id: 5,
     employee: 'David Brown',
     leaveType: 'Other',
-    startDate: '2024-03-22',
+    startDate: '2025-01-22',
     endDate: '2024-03-23',
     status: 'Approved'
   }
@@ -116,13 +116,13 @@ const LeaveManagementPage = () => {
         </AnimatedComponent>
       </div>
 
-      {/* Calendar View */}
-      <div className="mb-6">
-        <LeaveCalendar absences={mockAbsences} />
-      </div>
-
       {/* Leave Management Table */}
       <LeaveManagementTable leaveData={leaveData} />
+
+      {/* Calendar View */}
+      <div className="mt-6">
+        <LeaveCalendar absences={mockAbsences} />
+      </div>
     </motion.div>
   );
 };

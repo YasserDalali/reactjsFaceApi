@@ -28,6 +28,7 @@
     "react-router-dom": "^7.1.1",
     "react-table": "^7.8.0",
     "react-webcam": "^7.2.0",
+    "tailwind-merge": "^3.0.1",
     "yup": "^1.6.1"
   },
   "devDependencies": {

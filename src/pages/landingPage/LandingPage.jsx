@@ -1,8 +1,11 @@
 import React from 'react'
+import Hero from './Hero'
 
 function LandingPage() {
   return (
-    <div>LandingPage</div>
+    <main className='bg-zinc-900 text-white h-[200vh] overflow-x-clip'>
+    <Hero/>
+    </main>
   )
 }
 

@@ -18,7 +18,7 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [], employees = []
           const employee = employees.find(emp => emp.id === value);
           return (
             <Link
-              to={`/employees/${employee?.id}`}
+              to={`/admin/employees/${employee?.id}`}
               className="text-blue-600 hover:text-blue-800 hover:underline"
             >
               {employee?.name || 'Unknown'}

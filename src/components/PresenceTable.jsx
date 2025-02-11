@@ -33,7 +33,7 @@ const PresenceTable = ({ attendanceData = [] }) => {
         accessor: 'employees.name',
         Cell: ({ value, row }) => (
           <Link
-            to={`/employees/${row.original.employee_id}`}
+            to={`/admin/employees/${row.original.employee_id}`}
             className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
           >
             {value}

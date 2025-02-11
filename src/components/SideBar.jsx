@@ -92,7 +92,7 @@ const Sidebar = () => {
           <Settings 
             size={20} 
             className={`transition-transform duration-200 group-hover:scale-110
-              ${isActive('/settings') ? 'transform scale-110' : ''}`}
+              ${isActive('/admin/settings') ? 'transform scale-110' : ''}`}
           />
           
           {/* Settings Tooltip */}

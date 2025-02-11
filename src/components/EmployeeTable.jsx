@@ -25,7 +25,7 @@ const EmployeeTable = ({ employees }) => {
         accessor: 'name',
         Cell: ({ value, row }) => (
           <Link
-            to={`/employees/${row.original.id}`}
+            to={`/admin/employees/${row.original.id}`}
             className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
           >
             {value}

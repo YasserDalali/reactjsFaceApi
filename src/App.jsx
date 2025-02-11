@@ -11,28 +11,23 @@ import Navbar from './components/Navbar';
 import SettingsPage from './pages/SettingsPage';
 import { Provider } from 'react-redux';
 import store from './context/store';
+import LandingPage from './pages/landingPage/LandingPage';
 
 const App = () => {
   return (
     <Provider store={store}>
       <Router>
-        <div className="flex">
-          {/* Sidebar */}
-          <Sidebar /> {/* Use Sidebar component */}
-          <Navbar />
-          {/* Main content */}
-          <main className="flex-1 p-6 ms-16 mt-16">
+       
             <Routes>
-              <Route path="*" element={<DashboardPage />} />
-              <Route path="leave-management" element={<LeaveManagementPage />} />
-              <Route path="/employees" element={<EmployeePage />} />
-              <Route path="/employees/:id" element={<ProfilePage />} />
-              <Route path="/attendance" element={<AttendancePage />} />
-              <Route path="/facedetection" element={<FaceDetection />} />
-              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="*" element={<LandingPage />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/admin/leave-management" element={<LeaveManagementPage />} />
+              <Route path="/admin/employees" element={<EmployeePage />} />
+              <Route path="/admin/employees/:id" element={<ProfilePage />} />
+              <Route path="/admin/attendance" element={<AttendancePage />} />
+              <Route path="/admin/facedetection" element={<FaceDetection />} />
+              <Route path="/admin/settings" element={<SettingsPage />} />
             </Routes>
-          </main>
-        </div>
       </Router>
     </Provider>
   );

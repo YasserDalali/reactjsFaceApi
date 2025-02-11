@@ -4,34 +4,37 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AnimatedTableRow from './AnimatedTableRow';
 
-const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
+const LeaveManagementTable = ({ leaveData: initialLeaveData = [], employees = [] }) => {
   const [tableData, setTableData] = useState(initialLeaveData);
-  
+
   const data = React.useMemo(() => tableData, [tableData]);
 
   const columns = React.useMemo(
     () => [
       {
         Header: 'Employee',
-        accessor: 'employee',
-        Cell: ({ value, row }) => (
-          <Link 
-            to={`/profile/${row.original.id}`}
-            className="text-blue-600 hover:text-blue-800 hover:underline"
-          >
-            {value}
-          </Link>
-        ),
+        accessor: 'employee_id',
+        Cell: ({ value }) => {
+          const employee = employees.find(emp => emp.id === value);
+          return (
+            <Link
+              to={`/employees/${employee?.id}`}
+              className="text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              {employee?.name || 'Unknown'}
+            </Link>
+          );
+        },
       },
       {
         Header: 'Leave Type',
-        accessor: 'leaveType',
+        accessor: 'type',
         Cell: ({ value }) => (
           <span className={`px-2 py-1 rounded-full text-sm font-medium
-            ${value === 'Sick Leave' ? 'bg-red-100 text-red-700' : 
+            ${value === 'Sick Leave' ? 'bg-red-100 text-red-700' :
               value === 'Vacation' ? 'bg-blue-100 text-blue-700' :
-              value === 'Personal' ? 'bg-purple-100 text-purple-700' :
-              'bg-gray-100 text-gray-700'}`
+                value === 'Personal' ? 'bg-purple-100 text-purple-700' :
+                  'bg-gray-100 text-gray-700'}`
           }>
             {value}
           </span>
@@ -39,11 +42,11 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
       },
       {
         Header: 'Start Date',
-        accessor: 'startDate',
+        accessor: 'start_date',
       },
       {
         Header: 'End Date',
-        accessor: 'endDate',
+        accessor: 'end_date',
       },
       {
         Header: 'Duration',
@@ -62,10 +65,10 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
               setTableData(newData);
             }}
             className={`px-3 py-1 rounded-md text-sm font-medium border-2 cursor-pointer
-              ${value === 'Approved' ? 'bg-green-100 text-green-700 border-green-200' : 
+              ${value === 'Approved' ? 'bg-green-100 text-green-700 border-green-200' :
                 value === 'Pending' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
-                value === 'Rejected' ? 'bg-red-100 text-red-700 border-red-200' :
-                'bg-gray-100 text-gray-700 border-gray-200'}`
+                  value === 'Rejected' ? 'bg-red-100 text-red-700 border-red-200' :
+                    'bg-gray-100 text-gray-700 border-gray-200'}`
             }
           >
             <option value="Pending" className="bg-white text-yellow-700">Pending</option>
@@ -79,13 +82,13 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
         accessor: 'actions',
         Cell: ({ row }) => (
           <div className="flex space-x-2">
-            <button 
+            <button
               className="px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-800 focus:outline-none"
               onClick={() => console.log('View details', row.original)}
             >
               View
             </button>
-            <button 
+            <button
               className="px-3 py-1 text-sm font-medium text-red-600 hover:text-red-800 focus:outline-none"
               onClick={() => console.log('Delete', row.original)}
             >
@@ -95,7 +98,7 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
         ),
       },
     ],
-    [tableData]
+    [tableData, employees]
   );
 
   const {
@@ -126,13 +129,12 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
   );
 
   return (
-    
     <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg">
       <div className="p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Leave Requests
         </h3>
-        
+
         <div className="flex flex-col">
           <div className="-m-1.5 overflow-x-auto">
             <div className="p-1.5 min-w-full inline-block align-middle">
@@ -157,7 +159,7 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
                     {headerGroups.map((headerGroup) => (
                       <tr {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map((column) => (
-                          <th 
+                          <th
                             {...column.getHeaderProps(column.getSortByToggleProps())}
                             className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500"
                           >
@@ -182,8 +184,8 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
                       return (
                         <AnimatedTableRow key={row.id} index={index}>
                           {row.cells.map((cell) => (
-                            <td 
-                              {...cell.getCellProps()} 
+                            <td
+                              {...cell.getCellProps()}
                               className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200"
                             >
                               {cell.render('Cell')}
@@ -223,9 +225,8 @@ const LeaveManagementTable = ({ leaveData: initialLeaveData = [] }) => {
                     <button
                       key={i}
                       onClick={() => gotoPage(i)}
-                      className={`px-3 py-1 border rounded-md ${
-                        pageIndex === i ? 'bg-blue-500 text-white' : ''
-                      }`}
+                      className={`px-3 py-1 border rounded-md ${pageIndex === i ? 'bg-blue-500 text-white' : ''
+                        }`}
                     >
                       {i + 1}
                     </button>

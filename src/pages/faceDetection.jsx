@@ -70,8 +70,12 @@ function FaceDetection() {
     }
   };
 
+  useEffect = ( ) => {
+    return null; []
+  }
+
   return (
-    <div className="app bg-black">
+          <div className="app bg-black">
       <CameraSelect onDeviceSelect={handleDeviceSelect} />
       {loading && <LoadingSpinner />}
       <video

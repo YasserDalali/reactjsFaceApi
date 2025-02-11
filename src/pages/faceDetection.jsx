@@ -52,6 +52,16 @@ function FaceDetection() {
     }
   }, [attendance]);
 
+  // Cleanup function to stop the video stream
+  useEffect(() => {
+    const video = videoRef.current;
+    return () => {
+      if (video && video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [videoRef]);
+
   // Get the most recent attendance log
   const latestRecord = attendanceWithScreenshots[attendanceWithScreenshots.length - 1];
 
@@ -70,9 +80,9 @@ function FaceDetection() {
     }
   };
 
-  useEffect = ( ) => {
+/*   useEffect = ( ) => {
     return null; []
-  }
+  } */
 
   return (
           <div className="app bg-black">
@@ -94,7 +104,7 @@ function FaceDetection() {
           height: "100vh",
         }}
       />
-      <table className="absolute bottom-10 left-0 z-20 bg-white border rounded-lg border-gray-300 shadow-lg w-[90%]">
+      <table className="absolute bottom-10 left-[6%] z-20 bg-white border rounded-lg border-gray-300 shadow-lg w-[90%]">
         <thead>
           <tr className="bg-gray-100">
             <th className="px-4 py-2 text-left font-medium text-gray-700">Attender</th>

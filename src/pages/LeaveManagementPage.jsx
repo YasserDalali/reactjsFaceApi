@@ -34,12 +34,7 @@ const LeaveManagement = () => {
 
   return (
 
-    <div className="flex">
-      {/* Sidebar */}
-      <Sidebar /> {/* Use Sidebar component */}
-      <Navbar />
-      {/* Main content */}
-      <main className="flex-1 p-6 ms-16 mt-16">
+
         <div className="p-6">
           <AnimatedComponent>
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
@@ -91,8 +86,7 @@ const LeaveManagement = () => {
             <LeaveCalendar absences={absences} />
           </div>
         </div>
-      </main>
-    </div>
+
 
 
   );

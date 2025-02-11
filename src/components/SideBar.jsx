@@ -7,12 +7,12 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { path: '/', icon: Home, label: 'Dashboard' },
-    { path: '/leave-management', icon: Calendar, label: 'Leave Management' },
-    { path: '/employees', icon: User, label: 'Employees' },
-    { path: '/attendance', icon: Clock, label: 'Attendance' },
-    { path: '/facedetection', icon: Camera, label: 'Face Detection' },
-    { path: '/reports', icon: BarChart3, label: 'Reports' },
+    { path: '/admin/', icon: Home, label: 'Dashboard' },
+    { path: '/admin/leave-management', icon: Calendar, label: 'Leave Management' },
+    { path: '/admin/employees', icon: User, label: 'Employees' },
+    { path: '/admin/attendance', icon: Clock, label: 'Attendance' },
+    { path: '/admin/facedetection', icon: Camera, label: 'Face Detection' },
+    { path: '/admin/reports', icon: BarChart3, label: 'Reports' },
   ];
 
   const isActive = (path) => location.pathname === path;

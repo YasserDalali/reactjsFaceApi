@@ -14,7 +14,7 @@ function FaceDetection() {
 
   // Keep track of attendance records with their screenshots
   const [attendanceWithScreenshots, setAttendanceWithScreenshots] = useState([]);
-  
+
   const { videoRef, canvasRef, attendance, loading } = useFaceDetection(
     referenceImages,
     0.7,
@@ -26,7 +26,7 @@ function FaceDetection() {
   const captureScreenshot = () => {
     const video = videoRef.current;
     if (!video) return null;
-    
+
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -41,7 +41,7 @@ function FaceDetection() {
       // Only capture screenshot for new attendance records
       const newRecord = attendance[attendance.length - 1];
       const screenshot = captureScreenshot();
-      
+
       setAttendanceWithScreenshots(prev => [
         ...prev,
         {
@@ -69,7 +69,7 @@ function FaceDetection() {
     if (videoRef.current && videoRef.current.srcObject) {
       // Stop current stream
       videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-      
+
       // Start new stream with selected device
       navigator.mediaDevices.getUserMedia({
         video: { deviceId: { exact: deviceId } }
@@ -80,12 +80,12 @@ function FaceDetection() {
     }
   };
 
-/*   useEffect = ( ) => {
-    return null; []
-  } */
+  /*   useEffect = ( ) => {
+      return null; []
+    } */
 
   return (
-          <div className="app bg-black">
+    <div className="app bg-black">
       <CameraSelect onDeviceSelect={handleDeviceSelect} />
       {loading && <LoadingSpinner />}
       <video
@@ -122,11 +122,10 @@ function FaceDetection() {
                 {new Date(latestRecord.timestamp).toLocaleTimeString()}
               </td>
               <td
-                className={`px-4 py-2 font-semibold ${
-                  latestRecord.distance.toFixed(2) < 0.38
+                className={`px-4 py-2 font-semibold ${latestRecord.distance.toFixed(2) < 0.38
                     ? "text-green-600"
                     : "text-red-600"
-                }`}
+                  }`}
               >
                 {latestRecord.distance.toFixed(2) < 0.4 ? "Accurate" : "Inaccurate"}
               </td>
@@ -135,8 +134,8 @@ function FaceDetection() {
               </td>
               <td className="px-4 py-2">
                 {latestRecord.screenshot && (
-                  <img 
-                    src={latestRecord.screenshot} 
+                  <img
+                    src={latestRecord.screenshot}
                     alt={`Screenshot of ${latestRecord.attender}`}
                     className="w-24 h-24 object-cover rounded-md"
                   />

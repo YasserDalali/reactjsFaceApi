@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import AnimatedComponent from '../components/AnimatedComponent';
 import sb from '../database/supabase-client';
 
+const defaultAvatar = 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
+
 const ProfilePage = () => {
   const { id } = useParams();
   const [employeeData, setEmployeeData] = useState(null);
@@ -86,8 +88,16 @@ const ProfilePage = () => {
       <AnimatedComponent>
         <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-lg p-6 mb-6">
           <div className="flex items-start space-x-6">
-            <div className="bg-gray-100 dark:bg-neutral-700 rounded-full p-4">
-              <User size={64} className="text-gray-600 dark:text-neutral-300" />
+            <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0">
+              <img
+                src={employeeData.avatar_url || defaultAvatar}
+                alt={employeeData.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = defaultAvatar;
+                }}
+              />
             </div>
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">

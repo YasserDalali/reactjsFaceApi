@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTable, useSortBy, usePagination, useGlobalFilter } from 'react-table';
-import { ArrowDown, ArrowUp, ArrowUpDown, Search, Trash } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Search, Trash, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import AnimatedComponent from './AnimatedComponent';
@@ -8,8 +8,7 @@ import AnimatedTableRow from './AnimatedTableRow';
 import ModalButton from './Modal';
 import ProfilePage from '../pages/ProfilePage';
 
-
-
+const defaultAvatar = 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png';
 
 const EmployeeTable = ({ employees }) => {
   const data = React.useMemo(() => employees, [employees]);
@@ -17,19 +16,28 @@ const EmployeeTable = ({ employees }) => {
   const columns = React.useMemo(
     () => [
       {
-        Header: 'ID',
-        accessor: 'id',
-      },
-      {
         Header: 'Name',
         accessor: 'name',
         Cell: ({ value, row }) => (
-          <Link
-            to={`/admin/employees/${row.original.id}`}
-            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-          >
-            {value}
-          </Link>
+          <div className="flex items-center space-x-3">
+            <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0">
+              <img
+                src={row.original.avatar_url || defaultAvatar}
+                alt={value}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = defaultAvatar;
+                }}
+              />
+            </div>
+            <Link
+              to={`/admin/employees/${row.original.id}`}
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              {value}
+            </Link>
+          </div>
         ),
       },
       {

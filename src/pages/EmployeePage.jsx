@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useFetchEmployees } from '../hooks/useFetchEmployees';
 import EmployeeTable from '../components/EmployeeTable';
+import AddEmployeeModal from '../components/AddEmployeeModal';
 
 const EmployeePage = () => {
-  const { employees, loading, error } = useFetchEmployees();
+  const { employees, loading, error, refetch } = useFetchEmployees();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const handleEmployeeAdded = () => {
+    refetch();
+  };
 
   if (loading) {
     return (
@@ -26,10 +32,23 @@ const EmployeePage = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
-        Employees
-      </h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          Employees
+        </h1>
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-600"
+        >
+          Add Employee
+        </button>
+      </div>
       <EmployeeTable employees={employees} />
+      <AddEmployeeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onEmployeeAdded={handleEmployeeAdded}
+      />
     </div>
   );
 };

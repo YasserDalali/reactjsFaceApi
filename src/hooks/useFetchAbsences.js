@@ -11,12 +11,13 @@ export const useFetchAbsences = () => {
             try {
                 setLoading(true);
                 const { data, error: supabaseError } = await sb
-                    .from('attendance') // Assuming attendance table holds absence data
+                    .from('attendance')
                     .select(`
                         id,
                         checkdate,
                         lateness,
                         employees (
+                            id,
                             name
                         )
                     `);
@@ -25,16 +26,19 @@ export const useFetchAbsences = () => {
                     throw supabaseError;
                 }
 
-                // Transform the data to match the expected structure
-                const formattedAbsences = data.map(absence => ({
-                    id: absence.id,
-                    employee: absence.employees.name,
-                    leaveType: absence.status, // Assuming status indicates leave type
-                    startDate: absence.checkdate, // Adjust as necessary
-                    endDate: absence.checkdate, // Adjust as necessary
-                }));
+                // Transform the data to match the expected structure and filter out invalid entries
+                const formattedAbsences = data
+                    .filter(absence => absence.employees && absence.employees.name) // Filter out entries with missing employee data
+                    .map(absence => ({
+                        id: absence.id,
+                        employee: absence.employees.name,
+                        leaveType: absence.status || 'Unknown',
+                        startDate: absence.checkdate,
+                        endDate: absence.checkdate,
+                        lateness: absence.lateness || 0
+                    }));
 
-                setAbsences(formattedAbsences || []);
+                setAbsences(formattedAbsences);
             } catch (err) {
                 console.error('Error fetching absences:', err);
                 setError(err.message);

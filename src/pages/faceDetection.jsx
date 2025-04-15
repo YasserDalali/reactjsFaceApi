@@ -86,7 +86,7 @@ function FaceDetection() {
 
   return (
     <div className="app bg-black">
-      <CameraSelect onDeviceSelect={handleDeviceSelect} />
+      
       {loading && <LoadingSpinner />}
       <video
         ref={videoRef}

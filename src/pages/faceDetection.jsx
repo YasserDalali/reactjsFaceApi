@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import useFaceDetection from "../hooks/useFaceDetection";
 import LoadingSpinner from "../components/LoadingSpinner";
-import CameraSelect from '../components/CameraSelect';
 
 
 function FaceDetection() {
